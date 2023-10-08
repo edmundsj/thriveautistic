@@ -27,7 +27,7 @@ export function Navbar() {
     </nav>
   )
 }
-export function Layout({children}) {
+export function Layout({children}:{children: any}) {
   return (
     <>
       <Navbar/>

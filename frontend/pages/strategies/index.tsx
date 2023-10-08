@@ -30,7 +30,7 @@ const iconFontSize = 75;
 export default function StrategyPage() {
   const {data: strategies} = useStrategies()
   const strategyCards = strategies?.map(strategy => {
-    return <StrategyCard id={strategy.id} title={strategy.title} description={strategy.description} stories={strategy.stories}/>
+    return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories}/>
   })
   return (
     <div className={'grid mx-auto p-5'}>
@@ -40,7 +40,7 @@ export default function StrategyPage() {
 }
 const commonSmileyClasses = 'cursor-pointer'
 
-function StrategyCard({id, title, description, stories}:{id: number, title: string, description: string, stories}) {
+function StrategyCard({id, title, description, stories}:{id: number, title: string, description: string, stories: any[]}) {
   return (
     <Card sx={{minWidth: 275}}>
       <CardHeader title={title}/>

@@ -30,7 +30,7 @@ This site uses a next.js frontend and supabase backend.
 - [] Wire up voting frontend + backend, including changing your vote
 - [] Wire up "Add a strategy" frontend form + backend
 - [] Wire up "Add a story" frontend form + backend
-- [] Publish to Vercel
+- [x] Publish to Vercel
 - [x] Add individual stories to strategy accordion
 - [x] Render all strategies on main "ideas" page
 - [x] Add logout flow
