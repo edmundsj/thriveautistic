@@ -12,15 +12,10 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
-import {ButtonProps} from "@mui/material/Button";
 import AddIcon from '@mui/icons-material/Add';
 
-import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
-import Container from '@mui/material/Container';
 import {useState} from "react";
-import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
-import { styled } from '@mui/system';
 
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -28,38 +23,37 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import {CardContent} from "@mui/material";
-
-
-
-
+import {useStrategies} from "@/hooks/strategies";
 
 const iconFontSize = 75;
 
-export default function IdeaPage() {
-    return (
-      <div className={'grid mx-auto p-5'}>
-        <IdeaCard
-          title={'Wear noise-cancelling headphones'}
-          description={'Wearing noise-cancelling headphones can help'}/>
-      </div>
+export default function StrategyPage() {
+  const {data: strategies} = useStrategies()
+  const strategyCards = strategies?.map(strategy => {
+    return <StrategyCard id={strategy.id} title={strategy.title} description={strategy.description} stories={strategy.stories}/>
+  })
+  return (
+    <div className={'grid mx-auto p-5'}>
+      {strategyCards}
+    </div>
   );
 }
 const commonSmileyClasses = 'cursor-pointer'
 
-function IdeaCard({title, description}:{title: string, description: string}) {
+function StrategyCard({id, title, description, stories}:{id: number, title: string, description: string, stories}) {
   return (
     <Card sx={{minWidth: 275}}>
       <CardHeader title={title}/>
-      <Votes/>
+      <Votes strategyId={id}/>
       <CardContent>
         {description}
       </CardContent>
-      <Stories/>
+      <Stories strategyId={id} stories={stories} />
     </Card>
   );
 }
 
-function Votes() {
+function Votes({strategyId}:{strategyId: number}) {
  return (
    <>
      <div className={'flex justify-center gap-x-5'}>
@@ -94,8 +88,20 @@ function Votes() {
  )
 }
 
-function Stories() {
+function Stories({strategyId, stories}:{strategyId: number, stories: any[]}) {
   const [modalOpen, setModalOpen] = useState(true)
+  const storyCards = stories?.map((story: any) => {
+    const innerText = <Typography variant={'h5'} className={'mb-1'}>{story.title}</Typography>
+    const title = story.link ? (
+      <a href={story.link}>
+        {innerText}
+      </a>
+    ) : innerText
+    return <div>
+      {title}
+      <Typography>{story.text}</Typography>
+    </div>
+  })
   return (
     <Accordion>
       <AccordionSummary
@@ -106,15 +112,13 @@ function Stories() {
         <Typography>Stories</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>
-          This is a story about something interesting.
-        </Typography>
+        {storyCards}
       </AccordionDetails>
-      <FormDialog open={modalOpen} setOpen={setModalOpen}/>
+      <StoryFormDialog open={modalOpen} setOpen={setModalOpen} strategyId={strategyId}/>
     </Accordion>
     )
 }
-export function FormDialog({open, setOpen}:{open: boolean, setOpen: Function}) {
+export function StoryFormDialog({open, setOpen, strategyId}:{open: boolean, setOpen: Function, strategyId: number}) {
   const [formData, setFormData] = useState({
     title: '',
     text: '',

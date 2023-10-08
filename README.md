@@ -27,23 +27,29 @@ This site uses a next.js frontend and supabase backend.
 
 
 ## TODO for MVP
-- [] Add "Add a Strategy" button
 - [] Wire up voting frontend + backend, including changing your vote
 - [] Wire up "Add a strategy" frontend form + backend
 - [] Wire up "Add a story" frontend form + backend
 - [] Publish to Vercel
+- [x] Add individual stories to strategy accordion
+- [x] Render all strategies on main "ideas" page
+- [x] Add logout flow
+- [x] Add email-based authentication
+- [x] Add signup flow
+- [x] Add login flow
+- [x] Add "Add a Strategy" button
+
+## Non-MVP but important
 - [] Acquire domain name
 - [] Setup DNS to point to domain name
-- [] Add email-based authentication
+- [] Add landing page describing the site
 - [] Add google-based authentication
-- [] Add signup flow
-- [] Add login flow
-- [] Add logout flow
-- [] Render all strategies on main "ideas" page
+- [] Add custom SMTP email authentication flow to avoid rate limits
 - [] Add ability to edit existing stories
 - [] Add ability to edit existing strategies
-- [] Add individual stories to strategy accordion
-- [] Add landing page describing the site
+- [] Add challenges to match up to the strategies
 
 ## Future ideas
 - [] "Autistic profiles" including specific challenges each individual faces, to allow for more relevant strategies
+- [] Efficiently fetch vote counts for each strategy
+- [] Only fetch a limited number of strategies
