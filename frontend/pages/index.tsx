@@ -1,10 +1,13 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+'use client'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import LogoutButton from '../components/LogoutButton'
 import SupabaseLogo from '../components/SupabaseLogo'
 import NextJsLogo from '../components/NextJsLogo'
 import DeployButton from '../components/DeployButton'
+import {useUser} from "@/hooks/users";
+
 
 export const dynamic = 'force-dynamic'
 
@@ -39,12 +42,8 @@ const examples = [
   { type: 'Route Handlers', src: 'app/_examples/route-handler.ts' },
 ]
 
-export default async function Index() {
-  const supabase = createServerComponentClient({ cookies })
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+export default function Index() {
+  const {data: user} = useUser()
 
   return (
     <div className="w-full flex flex-col items-center">

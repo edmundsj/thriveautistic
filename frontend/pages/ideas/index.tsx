@@ -121,14 +121,14 @@ export function FormDialog({open, setOpen}:{open: boolean, setOpen: Function}) {
     link: '',
   });
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: any) => {
     event.preventDefault();
     console.log(formData);
     // Handle form submission logic here
     handleClose();
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: any) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
