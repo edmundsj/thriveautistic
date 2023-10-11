@@ -14,6 +14,7 @@ export function useStrategies() {
     }
   )
 }
+
 export function useStrategyMutation({formData, strategyId}:{formData: any, strategyId?: number}) {
   const supabase = createClientComponentClient<Database>()
   const client = useQueryClient()

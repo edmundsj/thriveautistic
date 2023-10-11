@@ -19,6 +19,8 @@ import {useStrategies} from "@/hooks/strategies";
 const iconFontSize = 75;
 import {StoryFormDialog} from "@/components/StoryFormDialog";
 import {StrategyFormDialog} from "@/components/StrategyFormDialog";
+import {useUserVote, useVoteMutation, useVotes} from "@/hooks/votes";
+import {isMouseLikePointerType} from "@floating-ui/utils/react";
 
 export default function StrategyPage() {
   const {data: strategies} = useStrategies()
@@ -49,35 +51,70 @@ function StrategyCard({id, title, description, stories}:{id: number, title: stri
   );
 }
 
+type PossibleValues = 0 | 1 | -1
+const positiveValue = 1;
+const negativeValue = -1;
+const neutralValue = 0;
+
 function Votes({strategyId}:{strategyId: number}) {
+
+  const [formData, setFormData] = useState({
+    strategy: strategyId,
+    value: 0
+  })
+
+  const {data: votes} = useVotes({strategy: strategyId})
+  const {data: userVote} = useUserVote({strategy: strategyId})
+  const {mutate} = useVoteMutation({strategy: strategyId, voteId: userVote?.id})
+
+  function handleVoteSubmit(value: PossibleValues) {
+    const formData = {strategy: strategyId, value: value}
+    mutate({formData: formData})
+  }
+
+  const positiveVoteCount = (votes as any[])?.filter((vote, index) => {
+    return vote.value == positiveValue
+  }).length;
+  const negativeVoteCount = (votes as any[])?.filter((vote, index) => {
+    return vote.value == negativeValue
+  }).length;
+  const neutralVoteCount = (votes as any[])?.filter((vote, index) => {
+    return vote.value == neutralValue
+  }).length;
  return (
    <>
      <div className={'flex justify-center gap-x-5'}>
        <SentimentVeryDissatisfiedIcon
          className={'hover:text-red-300 active:text-red-400 ' + commonSmileyClasses}
-         style={{fontSize: iconFontSize}} />
+         style={{fontSize: iconFontSize}}
+         onClick={() => {handleVoteSubmit(negativeValue)}}
+       />
        <SentimentSatisfiedIcon
          className={'hover:text-yellow-200 active:text-yellow-300 ' + commonSmileyClasses}
-         style={{fontSize: iconFontSize}}/>
+         style={{fontSize: iconFontSize}}
+         onClick={() => {handleVoteSubmit(neutralValue)}}
+       />
        <InsertEmoticonIcon
          className={'hover:text-green-400 active:text-green-500 ' + commonSmileyClasses}
-         style={{fontSize: iconFontSize}}/>
+         style={{fontSize: iconFontSize}}
+         onClick={() => {handleVoteSubmit(positiveValue)}}
+       />
      </div>
      <div className={'flex justify-center gap-x-5'}>
        <div
          className={'hover:text-red-300 active:text-red-400 text-center'}
          style={{width: iconFontSize}} >
-         3
+         {negativeVoteCount}
        </div>
        <div
          className={'hover:text-red-300 active:text-red-400 text-center'}
          style={{width: iconFontSize}} >
-         10
+         {neutralVoteCount}
        </div>
        <div
          className={'hover:text-red-300 active:text-red-400 text-center'}
          style={{width: iconFontSize}} >
-         55
+         {positiveVoteCount}
        </div>
      </div>
    </>

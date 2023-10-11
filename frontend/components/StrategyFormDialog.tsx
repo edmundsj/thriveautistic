@@ -45,7 +45,7 @@ export function StrategyFormDialog({open, setOpen, strategyId}:{open: boolean, s
   return (
     <div>
       <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon/>} disabled={!user}>
-        Add a story
+        Add a strategy
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add A Strategy</DialogTitle>

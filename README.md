@@ -33,7 +33,7 @@ This site uses a next.js frontend and supabase backend.
 
 
 ## TODO for MVP
-- [] Wire up voting frontend + backend, including changing your vote
+- [x] Wire up voting frontend + backend, including changing your vote
 - [x] Wire up "Add a strategy" frontend form + backend
 - [x] Wire up "Add a story" frontend form + backend
 - [x] Publish to Vercel
@@ -53,9 +53,9 @@ This site uses a next.js frontend and supabase backend.
 - [] Add custom SMTP email authentication flow to avoid rate limits
 - [] Add ability to edit existing stories
 - [] Add ability to edit existing strategies
-- [] Add challenges to match up to the strategies
 
 ## Future ideas
 - [] "Autistic profiles" including specific challenges each individual faces, to allow for more relevant strategies
 - [] Efficiently fetch vote counts for each strategy
 - [] Only fetch a limited number of strategies
+- [] Add challenges to match up to the strategies
