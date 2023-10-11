@@ -1,170 +1,205 @@
-'use client'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import Link from 'next/link'
-import LogoutButton from '../components/LogoutButton'
-import SupabaseLogo from '../components/SupabaseLogo'
-import NextJsLogo from '../components/NextJsLogo'
-import DeployButton from '../components/DeployButton'
-import {useUser} from "@/hooks/users";
+import * as React from 'react';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import 'app/globals.css'
+
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+
+import TextField from '@mui/material/TextField';
+import {useState} from "react";
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import {CardContent} from "@mui/material";
+import {useStrategies} from "@/hooks/strategies";
+
+const iconFontSize = 75;
+
+export default function StrategyPage() {
+  const {data: strategies} = useStrategies()
+  const strategyCards = strategies?.map(strategy => {
+    return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories}/>
+  })
+  return (
+    <div className={'grid mx-auto p-5'}>
+      {strategyCards}
+    </div>
+  );
+}
+const commonSmileyClasses = 'cursor-pointer'
+
+function StrategyCard({id, title, description, stories}:{id: number, title: string, description: string, stories: any[]}) {
+  return (
+    <Card sx={{minWidth: 275}}>
+      <CardHeader title={title}/>
+      <Votes strategyId={id}/>
+      <CardContent>
+        {description}
+      </CardContent>
+      <Stories strategyId={id} stories={stories} />
+    </Card>
+  );
+}
+
+function Votes({strategyId}:{strategyId: number}) {
+ return (
+   <>
+     <div className={'flex justify-center gap-x-5'}>
+       <SentimentVeryDissatisfiedIcon
+         className={'hover:text-red-300 active:text-red-400 ' + commonSmileyClasses}
+         style={{fontSize: iconFontSize}} />
+       <SentimentSatisfiedIcon
+         className={'hover:text-yellow-200 active:text-yellow-300 ' + commonSmileyClasses}
+         style={{fontSize: iconFontSize}}/>
+       <InsertEmoticonIcon
+         className={'hover:text-green-400 active:text-green-500 ' + commonSmileyClasses}
+         style={{fontSize: iconFontSize}}/>
+     </div>
+     <div className={'flex justify-center gap-x-5'}>
+       <div
+         className={'hover:text-red-300 active:text-red-400 text-center'}
+         style={{width: iconFontSize}} >
+         3
+       </div>
+       <div
+         className={'hover:text-red-300 active:text-red-400 text-center'}
+         style={{width: iconFontSize}} >
+         10
+       </div>
+       <div
+         className={'hover:text-red-300 active:text-red-400 text-center'}
+         style={{width: iconFontSize}} >
+         55
+       </div>
+     </div>
+   </>
+ )
+}
+
+function Stories({strategyId, stories}:{strategyId: number, stories: any[]}) {
+  const [modalOpen, setModalOpen] = useState(true)
+  const storyCards = stories?.map((story: any) => {
+    const innerText = <Typography variant={'h5'} className={'mb-1'}>{story.title}</Typography>
+    const title = story.link ? (
+      <a href={story.link}>
+        {innerText}
+      </a>
+    ) : innerText
+    return <div>
+      {title}
+      <Typography>{story.text}</Typography>
+    </div>
+  })
+  return (
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+      >
+        <Typography>Stories</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        {storyCards}
+      </AccordionDetails>
+      <StoryFormDialog open={modalOpen} setOpen={setModalOpen} strategyId={strategyId}/>
+    </Accordion>
+    )
+}
+export function StoryFormDialog({open, setOpen, strategyId}:{open: boolean, setOpen: Function, strategyId: number}) {
+  const [formData, setFormData] = useState({
+    title: '',
+    text: '',
+    link: '',
+  });
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    console.log(formData);
+    // Handle form submission logic here
+    handleClose();
+  };
+
+  const handleChange = (event: any) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
 
-export const dynamic = 'force-dynamic'
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-const resources = [
-  {
-    title: 'Cookie-based Auth and the Next.js App Router',
-    subtitle:
-      'This free course by Jon Meyers, shows you how to configure Supabase Auth to use cookies, and steps through some common patterns.',
-    url: 'https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF',
-    icon: 'M7 4V20M17 4V20M3 8H7M17 8H21M3 12H21M3 16H7M17 16H21M4 20H20C20.5523 20 21 19.5523 21 19V5C21 4.44772 20.5523 4 20 4H4C3.44772 4 3 4.44772 3 5V19C3 19.5523 3.44772 20 4 20Z',
-  },
-  {
-    title: 'Supabase Next.js App Router Example',
-    subtitle:
-      'Want to see a code example containing some common patterns with Next.js and Supabase? Check out this repo!',
-    url: 'https://github.com/supabase/supabase/tree/master/examples/auth/nextjs',
-    icon: 'M10 20L14 4M18 8L22 12L18 16M6 16L2 12L6 8',
-  },
-  {
-    title: 'Supabase Auth Helpers Docs',
-    subtitle:
-      'This template has configured Supabase Auth to use cookies for you, but the docs are a great place to learn more.',
-    url: 'https://supabase.com/docs/guides/auth/auth-helpers/nextjs',
-    icon: 'M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528',
-  },
-]
-
-const examples = [
-  { type: 'Client Components', src: 'app/_examples/client-component/page.tsx' },
-  { type: 'Server Components', src: 'app/_examples/server-component/page.tsx' },
-  { type: 'Server Actions', src: 'app/_examples/server-action/page.tsx' },
-  { type: 'Route Handlers', src: 'app/_examples/route-handler.ts' },
-]
-
-export default function Index() {
-  const {data: user} = useUser()
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <div className="w-full flex flex-col items-center">
-
-
-      <div className="animate-in flex flex-col gap-14 opacity-0 max-w-4xl px-3 py-16 lg:py-24 text-foreground">
-        <div className="flex flex-col items-center mb-4 lg:mb-12">
-          <div className="flex gap-8 justify-center items-center">
-            <Link href="https://supabase.com/" target="_blank">
-              <SupabaseLogo />
-            </Link>
-            <span className="border-l rotate-45 h-6" />
-            <NextJsLogo />
-          </div>
-          <h1 className="sr-only">Supabase and Next.js Starter Template</h1>
-          <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center my-12">
-            The fastest way to start building apps with{' '}
-            <strong>Supabase</strong> and <strong>Next.js</strong>
-          </p>
-          <div className="bg-foreground py-3 px-6 rounded-lg font-mono text-sm text-background">
-            Get started by editing <strong>app/page.tsx</strong>
-          </div>
-        </div>
-
-        <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
-
-        <div className="flex flex-col gap-8 text-foreground">
-          <h2 className="text-lg font-bold text-center">
-            Everything you need to get started
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {resources.map(({ title, subtitle, url, icon }) => (
-              <a
-                key={title}
-                className="relative flex flex-col group rounded-lg border p-6 hover:border-foreground"
-                href={url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <h3 className="font-bold mb-2  min-h-[40px] lg:min-h-[60px]">
-                  {title}
-                </h3>
-                <div className="flex flex-col grow gap-4 justify-between">
-                  <p className="text-sm opacity-70">{subtitle}</p>
-                  <div className="flex justify-between items-center">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="opacity-80 group-hover:opacity-100"
-                    >
-                      <path
-                        d={icon}
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="ml-2 h-4 w-4 opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 transition-all"
-                    >
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-8 text-foreground">
-          <div className="grid gap-2 justify-center mx-auto text-center">
-            <h2 className="text-lg font-bold text-center">Examples</h2>
-            <p className="text-sm">
-              Look in the <code>_examples</code> folder to see how to create a
-              Supabase client in all the different contexts.
-            </p>
-          </div>
-          <div className="w-full justify-center border rounded-lg overflow-hidden">
-            {examples.map(({ type, src }) => (
-              <div
-                key={type}
-                className="w-full grid grid-cols-3 border-b last:border-b-0 text-sm"
-              >
-                <div className="flex items-center font-bold p-4 min-h-12 w-full">
-                  {type}
-                </div>
-                <div className="col-span-2 border-l p-4 flex items-center">
-                  <code className="text-sm whitespace-pre-wrap">{src}</code>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-center text-center text-xs">
-          <p>
-            Powered by{' '}
-            <Link
-              href="https://supabase.com/"
-              target="_blank"
-              className="font-bold"
-            >
-              Supabase
-            </Link>
-          </p>
-        </div>
-      </div>
+    <div>
+      <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon/>}>
+        Add a story
+      </Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Add A Story</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Tell us about your experience, or someone else's experience that resonated with you.
+            If you have a link to a full story or article, we'd love you to put that here too.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="title"
+            name="title"
+            label="Title"
+            fullWidth
+            variant="outlined"
+            value={formData.title}
+            onChange={handleChange}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="text"
+            name="text"
+            label="Story"
+            fullWidth
+            variant="outlined"
+            multiline
+            minRows={5}
+            value={formData.text}
+            onChange={handleChange}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="link"
+            name="link"
+            label="Link (optional)"
+            fullWidth
+            variant="outlined"
+            value={formData.link}
+            onChange={handleChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSubmit}>Submit</Button>
+        </DialogActions>
+      </Dialog>
     </div>
-  )
+  );
 }
+
