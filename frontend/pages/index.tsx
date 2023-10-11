@@ -25,6 +25,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {CardContent} from "@mui/material";
 import {useStrategies} from "@/hooks/strategies";
 import {useStoryMutation} from "@/hooks/stories";
+import {useUser} from "@/hooks/users";
 
 const iconFontSize = 75;
 
@@ -127,6 +128,7 @@ export function StoryFormDialog({open, setOpen, strategyId}:{open: boolean, setO
   });
   const storyData = {...formData, strategy: strategyId}
   const {mutate: upsert} = useStoryMutation({formData: storyData})
+  const {data: user} = useUser()
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -151,7 +153,7 @@ export function StoryFormDialog({open, setOpen, strategyId}:{open: boolean, setO
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon/>}>
+      <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon/>} disabled={!user}>
         Add a story
       </Button>
       <Dialog open={open} onClose={handleClose}>
