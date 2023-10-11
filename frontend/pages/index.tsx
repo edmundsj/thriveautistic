@@ -29,7 +29,7 @@ export default function StrategyPage() {
     return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories}/>
   })
   return (
-    <div className={'grid mx-auto p-5 gap-y-5'}>
+    <div className={'grid mx-auto p-5 gap-y-5 max-w-2xl'}>
       {strategyCards}
       <StrategyFormDialog open={modalOpen} setOpen={setModalOpen}/>
     </div>
