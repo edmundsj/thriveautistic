@@ -2,7 +2,7 @@ import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import type { Database } from '@/supabase'
 import {useQuery} from "react-query";
 
-const strategiesKey = ['strategies']
+export const strategiesKey = ['strategies']
 export function useStrategies() {
   return useQuery(strategiesKey, async () => {
       const supabase = createClientComponentClient<Database>()

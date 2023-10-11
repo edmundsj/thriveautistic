@@ -1,25 +1,34 @@
-import {useMutation} from "react-query";
+import {useMutation, useQueryClient} from "react-query";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
+import {useUser} from "@/hooks/users";
 
-async function submitStory({story}: {story: any}) {
+import {strategiesKey} from "@/hooks/strategies";
+
+export function useStoryMutation({formData, storyId}:{formData: any, storyId?: number}) {
   const supabase = createClientComponentClient<Database>()
+  const client = useQueryClient()
+  const {data: author} = useUser()
 
-  const { data, error } = await supabase
-    .from('stories')
-    .insert([
-      story
-    ])
-    .select()
-  return data
-}
-const useStoryMutation= useMutation(submitStory, {
-    onSuccess: (data) => {
-      // Handle success. For example, show a success message or invalidate/refetch something in the cache
-      console.log("Story created:", data);
-    },
-    onError: (error) => {
-      // Handle the error. For example, show an error message to the user
-      console.error("Error creating story:", error);
+  const mutationFn = async () => {
+    if(storyId) {
+      formData.id = storyId;
     }
-  });
+    if(!author) {
+      const error = {error: 'Error: user trying to submit story without being not logged in'}
+      console.error(error);
+      return error;
+    }
+    formData.author = author.id
+    const { data, error } = await supabase
+      .from('stories')
+      .upsert([
+        formData
+      ])
+      .select()
+    await client.invalidateQueries(['stories', formData.strategyId]);
+    await client.invalidateQueries(strategiesKey);
+    return data;
+  }
+  return useMutation(['story', storyId], {mutationFn: mutationFn})
+}

@@ -24,6 +24,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import {CardContent} from "@mui/material";
 import {useStrategies} from "@/hooks/strategies";
+import {useStoryMutation} from "@/hooks/stories";
 
 const iconFontSize = 75;
 
@@ -124,11 +125,13 @@ export function StoryFormDialog({open, setOpen, strategyId}:{open: boolean, setO
     text: '',
     link: '',
   });
+  const storyData = {...formData, strategy: strategyId}
+  const {mutate: upsert} = useStoryMutation({formData: storyData})
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log(formData);
-    // Handle form submission logic here
+    console.log(storyData);
+    upsert()
     handleClose();
   };
 
