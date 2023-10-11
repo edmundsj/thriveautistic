@@ -11,35 +11,29 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
-
-import TextField from '@mui/material/TextField';
 import {useState} from "react";
 
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import {CardContent} from "@mui/material";
 import {useStrategies} from "@/hooks/strategies";
-import {useStoryMutation} from "@/hooks/stories";
-import {useUser} from "@/hooks/users";
 
 const iconFontSize = 75;
+import {StoryFormDialog} from "@/components/StoryFormDialog";
+import {StrategyFormDialog} from "@/components/StrategyFormDialog";
 
 export default function StrategyPage() {
   const {data: strategies} = useStrategies()
+  const [modalOpen, setModalOpen] = useState(false)
   const strategyCards = strategies?.map(strategy => {
     return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories}/>
   })
   return (
-    <div className={'grid mx-auto p-5'}>
+    <div className={'grid mx-auto p-5 gap-y-5'}>
       {strategyCards}
+      <StrategyFormDialog open={modalOpen} setOpen={setModalOpen}/>
     </div>
   );
 }
+
 const commonSmileyClasses = 'cursor-pointer'
 
 function StrategyCard({id, title, description, stories}:{id: number, title: string, description: string, stories: any[]}) {
@@ -91,7 +85,7 @@ function Votes({strategyId}:{strategyId: number}) {
 }
 
 function Stories({strategyId, stories}:{strategyId: number, stories: any[]}) {
-  const [modalOpen, setModalOpen] = useState(true)
+  const [modalOpen, setModalOpen] = useState(false)
   const storyCards = stories?.map((story: any) => {
     const innerText = <Typography variant={'h5'} className={'mb-1'}>{story.title}</Typography>
     const title = story.link ? (
@@ -120,91 +114,3 @@ function Stories({strategyId, stories}:{strategyId: number, stories: any[]}) {
     </Accordion>
     )
 }
-export function StoryFormDialog({open, setOpen, strategyId}:{open: boolean, setOpen: Function, strategyId: number}) {
-  const [formData, setFormData] = useState({
-    title: '',
-    text: '',
-    link: '',
-  });
-  const storyData = {...formData, strategy: strategyId}
-  const {mutate: upsert} = useStoryMutation({formData: storyData})
-  const {data: user} = useUser()
-
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    console.log(storyData);
-    upsert()
-    handleClose();
-  };
-
-  const handleChange = (event: any) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  return (
-    <div>
-      <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon/>} disabled={!user}>
-        Add a story
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add A Story</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Tell us about your experience, or someone else's experience that resonated with you.
-            If you have a link to a full story or article, we'd love you to put that here too.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="title"
-            name="title"
-            label="Title"
-            fullWidth
-            variant="outlined"
-            value={formData.title}
-            onChange={handleChange}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="text"
-            name="text"
-            label="Story"
-            fullWidth
-            variant="outlined"
-            multiline
-            minRows={5}
-            value={formData.text}
-            onChange={handleChange}
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="link"
-            name="link"
-            label="Link (optional)"
-            fullWidth
-            variant="outlined"
-            value={formData.link}
-            onChange={handleChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Submit</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
-}
-

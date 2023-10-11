@@ -34,7 +34,7 @@ This site uses a next.js frontend and supabase backend.
 
 ## TODO for MVP
 - [] Wire up voting frontend + backend, including changing your vote
-- [] Wire up "Add a strategy" frontend form + backend
+- [x] Wire up "Add a strategy" frontend form + backend
 - [x] Wire up "Add a story" frontend form + backend
 - [x] Publish to Vercel
 - [x] Add individual stories to strategy accordion
