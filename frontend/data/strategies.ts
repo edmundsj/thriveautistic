@@ -4,15 +4,15 @@ import {useMutation, useQuery, useQueryClient} from "react-query";
 import {useUser} from "@/data/users";
 
 export const strategiesKey = ['strategies']
-export function useStrategies() {
-  return useQuery(strategiesKey, async () => {
-      const supabase = createClientComponentClient<Database>()
-      const {data: strategies, error} = await supabase
-        .from('strategies')
-        .select(`*, stories(*)`);
-      return strategies
-    }
-  )
+export function useStrategies({onSuccess}:{onSuccess?: Function}) {
+  async function queryFn() {
+    const supabase = createClientComponentClient<Database>()
+    const {data: strategies, error} = await supabase
+      .from('strategies')
+      .select(`*, stories(*)`);
+    return strategies
+  }
+  return useQuery(strategiesKey, queryFn,{onSuccess})
 }
 
 export function useStrategyMutation({formData, strategyId}:{formData: any, strategyId?: number}) {

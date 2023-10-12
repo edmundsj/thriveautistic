@@ -11,7 +11,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 import {CardContent} from "@mui/material";
 import {useStrategies} from "@/data/strategies";
@@ -19,15 +19,36 @@ import {useStrategies} from "@/data/strategies";
 import {StoryFormDialog} from "@/components/StoryFormDialog";
 import {StrategyFormDialog} from "@/components/StrategyFormDialog";
 import {VotesBar} from "@/components/VotesBar";
+import SearchBar from "@/components/SearchBar";
 
 export default function StrategyPage() {
-  const {data: strategies} = useStrategies()
-  const [modalOpen, setModalOpen] = useState(false)
-  const strategyCards = strategies?.map(strategy => {
-    return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories}/>
+  const {data: strategies} = useStrategies({onSuccess: () => onSearch('')});
+  const [modalOpen, setModalOpen] = useState(false);
+  const [filteredStrategies, setFilteredStrategies] = useState([]);
+
+  useEffect(() => {
+    if (strategies) {
+      setFilteredStrategies(strategies)
+    }
+  }, [strategies])
+
+  function onSearch(searchTerm: string) {
+    if (searchTerm) {
+      const newStrategies= (strategies as any[])?.filter(strategy => {
+        return strategy.title.includes(searchTerm)
+      }) || []
+      setFilteredStrategies(newStrategies)
+    } else {
+      setFilteredStrategies(strategies ?? [])
+    }
+  }
+
+  const strategyCards = filteredStrategies?.map(strategy => {
+    return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories} key={strategy.id}/>
   })
   return (
     <div className={'grid mx-auto p-5 gap-y-5 max-w-2xl'}>
+      <SearchBar onSearch={onSearch}/>
       {strategyCards}
       <StrategyFormDialog open={modalOpen} setOpen={setModalOpen}/>
     </div>
@@ -54,11 +75,11 @@ function Stories({strategyId, stories}:{strategyId: number, stories: any[]}) {
   const storyCards = stories?.map((story: any) => {
     const innerText = <Typography variant={'h5'} className={'mb-1'}>{story.title}</Typography>
     const title = story.link ? (
-      <a href={story.link}>
+      <a href={story.link} key={story.id}>
         {innerText}
       </a>
     ) : innerText
-    return <div>
+    return <div key={story.id}>
       {title}
       <Typography>{story.text}</Typography>
     </div>

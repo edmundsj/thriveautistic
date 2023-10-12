@@ -30,9 +30,23 @@ The frontend is deployed with [Vercel](https://vercel.com/edmundsj/thriveautisti
 ## Technical Summary
 This site uses a next.js frontend and supabase backend.
 
+## Backlog
+- [] Add "tags" input and display to strategies
+- [] Add search bar to filter by tags
+- [] Add ability to edit existing stories
+- [] Add ability to edit existing strategies
+- [] Add ability for non-authors to suggest changes to strategies
+- [] Sort strategies from most to least helpful
+- [] Acquire custom domain name, setup DNS
+- [] Navigate to login / signup when you try to vote and aren't logged in
+- [] Add landing page describing the site
+- [] Add google-based authentication
+- [] Add custom SMTP email authentication flow to avoid rate limits
+- [] Add site policies to signup flow
 
-
-## TODO for MVP
+## Completed
+- [x] Fix bug where strategies don't initially load
+- [x] Add search bar to search by title
 - [x] Wire up voting frontend + backend, including changing your vote
 - [x] Wire up "Add a strategy" frontend form + backend
 - [x] Wire up "Add a story" frontend form + backend
@@ -44,20 +58,6 @@ This site uses a next.js frontend and supabase backend.
 - [x] Add signup flow
 - [x] Add login flow
 - [x] Add "Add a Strategy" button
-
-## Backlog
-- [] Add "tags" input and display to strategies
-- [] Add search bar to search by title and tags
-- [] Add ability to edit existing stories
-- [] Add ability to edit existing strategies
-- [] Add ability for non-authors to suggest changes to strategies
-- [] Sort strategies from most to least helpful
-- [] Acquire custom domain name, setup DNS
-- [] Navigate to login / signup when you try to vote and aren't logged in
-- [] Add landing page describing the site
-- [] Add google-based authentication
-- [] Add custom SMTP email authentication flow to avoid rate limits
-- [] Add site policies to signup flow
 
 ## Longer-term ideas
 - [] "Autistic profiles" including specific challenges each individual faces, to allow for more relevant strategies
