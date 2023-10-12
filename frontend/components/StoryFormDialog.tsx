@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {useStoryMutation} from "@/hooks/stories";
-import {useUser} from "@/hooks/users";
+import {useStoryMutation} from "@/data/stories";
+import {useUser} from "@/data/users";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Dialog from "@mui/material/Dialog";
@@ -11,15 +11,17 @@ import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import * as React from "react";
 
-export function StoryFormDialog({open, setOpen, strategyId}:{open: boolean, setOpen: Function, strategyId: number}) {
+export function StoryFormDialog({open, setOpen, strategyId, storyId}:{open: boolean, setOpen: Function, strategyId: number, storyId?: number}) {
   const [formData, setFormData] = useState({
     title: '',
     text: '',
     link: '',
   });
+
   const storyData = {...formData, strategy: strategyId}
-  const {mutate: upsert} = useStoryMutation({formData: storyData})
+
   const {data: user} = useUser()
+  const {mutate: upsert} = useStoryMutation({formData: storyData})
 
   const handleSubmit = (event: any) => {
     event.preventDefault();

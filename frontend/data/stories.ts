@@ -1,9 +1,9 @@
 import {useMutation, useQueryClient} from "react-query";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
-import {useUser} from "@/hooks/users";
+import {useUser} from "@/data/users";
 
-import {strategiesKey} from "@/hooks/strategies";
+import {strategiesKey} from "@/data/strategies";
 
 export function useStoryMutation({formData, storyId}:{formData: any, storyId?: number}) {
   const supabase = createClientComponentClient<Database>()
@@ -31,4 +31,8 @@ export function useStoryMutation({formData, storyId}:{formData: any, storyId?: n
     return data;
   }
   return useMutation(['story', storyId], {mutationFn: mutationFn})
+}
+
+export function storyMutationPolicy({story, authorId}:{story: any, authorId: string}) {
+  return story.author == authorId
 }

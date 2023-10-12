@@ -1,8 +1,8 @@
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
-import {useUser} from "@/hooks/users";
-import {strategiesKey} from "@/hooks/strategies";
+import {useUser} from "@/data/users";
+import {strategiesKey} from "@/data/strategies";
 
 
 export function useVotes({strategy}:{strategy: number}) {
@@ -19,6 +19,7 @@ export function useVotes({strategy}:{strategy: number}) {
 
 export function useUserVote({strategy}:{strategy: number}) {
   const {data: author} = useUser()
+  const authorString = author?.id ?? ''
 
   return useQuery(['vote', strategy, author?.id], async () => {
     const supabase = createClientComponentClient<Database>()
@@ -26,7 +27,7 @@ export function useUserVote({strategy}:{strategy: number}) {
       .from('votes')
       .select(`*`)
       .eq('strategy', strategy)
-      .eq('author', author?.id);
+      .eq('author', authorString);
     return votes ? votes[0] : null
   }
   )
@@ -37,7 +38,7 @@ export function useVoteMutation({voteId, strategy}:{voteId?: number, strategy: n
   const client = useQueryClient()
   const {data: author} = useUser()
 
-  const mutationFn = async ({formData}) => {
+  const mutationFn = async ({formData}:{formData: any}) => {
     if(!author) {
       const error = {error: 'Error: user trying to submit strategy without being not logged in'}
       console.error(error);
@@ -62,4 +63,8 @@ export function useVoteMutation({voteId, strategy}:{voteId?: number, strategy: n
     return data;
   }
   return useMutation(['vote', strategy], {mutationFn: mutationFn})
+}
+
+export function voteMutationPolicy({vote, authorId}:{vote: any, authorId: string}) {
+  return vote.author == authorId
 }

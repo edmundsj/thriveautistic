@@ -1,7 +1,7 @@
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import type { Database } from '@/supabase'
 import {useMutation, useQuery, useQueryClient} from "react-query";
-import {useUser} from "@/hooks/users";
+import {useUser} from "@/data/users";
 
 export const strategiesKey = ['strategies']
 export function useStrategies() {
@@ -43,4 +43,8 @@ export function useStrategyMutation({formData, strategyId}:{formData: any, strat
     return data;
   }
   return useMutation(['strategy', strategyId], {mutationFn: mutationFn})
+}
+
+export function strategyMutationPolicy({strategy, authorId}:{strategy: any, authorId: string}) {
+  return strategy.author == authorId
 }

@@ -1,7 +1,7 @@
 import DeployButton from "@/components/DeployButton";
 import LogoutButton from "@/components/LogoutButton";
 import Link from "next/link";
-import {useUser} from "@/hooks/users";
+import {useUser} from "@/data/users";
 
 export function Navbar() {
   const {data: user} = useUser()

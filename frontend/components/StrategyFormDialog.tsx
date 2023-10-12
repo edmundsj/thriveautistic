@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {useStoryMutation} from "@/hooks/stories";
-import {useUser} from "@/hooks/users";
+import {useStoryMutation} from "@/data/stories";
+import {useUser} from "@/data/users";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Dialog from "@mui/material/Dialog";
@@ -10,7 +10,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import * as React from "react";
-import {useStrategyMutation} from "@/hooks/strategies";
+import {useStrategyMutation} from "@/data/strategies";
 
 export function StrategyFormDialog({open, setOpen, strategyId}:{open: boolean, setOpen: Function, strategyId?: number}) {
   const [formData, setFormData] = useState({

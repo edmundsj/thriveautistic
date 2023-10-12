@@ -46,13 +46,13 @@ This site uses a next.js frontend and supabase backend.
 - [x] Add "Add a Strategy" button
 
 ## Non-MVP but important
+- [] Add ability to edit existing stories
+- [] Add ability to edit existing strategies
 - [] Acquire custom domain name
 - [] Setup DNS to point to domain name
 - [] Add landing page describing the site
 - [] Add google-based authentication
 - [] Add custom SMTP email authentication flow to avoid rate limits
-- [] Add ability to edit existing stories
-- [] Add ability to edit existing strategies
 
 ## Future ideas
 - [] "Autistic profiles" including specific challenges each individual faces, to allow for more relevant strategies
