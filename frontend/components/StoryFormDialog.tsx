@@ -12,11 +12,12 @@ import DialogActions from "@mui/material/DialogActions";
 import * as React from "react";
 
 export function StoryFormDialog({open, setOpen, strategyId, storyId}:{open: boolean, setOpen: Function, strategyId: number, storyId?: number}) {
-  const [formData, setFormData] = useState({
+  const emptyData = {
     title: '',
     text: '',
     link: '',
-  });
+  }
+  const [formData, setFormData] = useState({...emptyData});
 
   const storyData = {...formData, strategy: strategyId}
 
@@ -27,6 +28,7 @@ export function StoryFormDialog({open, setOpen, strategyId, storyId}:{open: bool
     event.preventDefault();
     console.log(storyData);
     upsert()
+    setFormData({...emptyData})
     handleClose();
   };
 

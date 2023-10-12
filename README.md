@@ -53,6 +53,7 @@ This site uses a next.js frontend and supabase backend.
 - [] Add landing page describing the site
 - [] Add google-based authentication
 - [] Add custom SMTP email authentication flow to avoid rate limits
+- [] Add site policies to signup flow
 
 ## Future ideas
 - [] "Autistic profiles" including specific challenges each individual faces, to allow for more relevant strategies

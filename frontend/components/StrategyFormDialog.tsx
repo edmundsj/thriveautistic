@@ -13,10 +13,11 @@ import * as React from "react";
 import {useStrategyMutation} from "@/data/strategies";
 
 export function StrategyFormDialog({open, setOpen, strategyId}:{open: boolean, setOpen: Function, strategyId?: number}) {
-  const [formData, setFormData] = useState({
+  const emptyFormData = {
     title: '',
     description: '',
-  });
+  }
+  const [formData, setFormData] = useState({...emptyFormData});
   const strategyData = {...formData}
   const {mutate: upsert} = useStrategyMutation({formData: strategyData, strategyId})
   const {data: user} = useUser()
@@ -25,6 +26,7 @@ export function StrategyFormDialog({open, setOpen, strategyId}:{open: boolean, s
     event.preventDefault();
     console.log(strategyData);
     upsert()
+    setFormData({...emptyFormData})
     handleClose();
   };
 
