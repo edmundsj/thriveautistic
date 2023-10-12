@@ -45,18 +45,23 @@ This site uses a next.js frontend and supabase backend.
 - [x] Add login flow
 - [x] Add "Add a Strategy" button
 
-## Non-MVP but important
+## Backlog
+- [] Add "tags" input and display to strategies
+- [] Add search bar to search by title and tags
 - [] Add ability to edit existing stories
 - [] Add ability to edit existing strategies
-- [] Acquire custom domain name
-- [] Setup DNS to point to domain name
+- [] Add ability for non-authors to suggest changes to strategies
+- [] Sort strategies from most to least helpful
+- [] Acquire custom domain name, setup DNS
+- [] Navigate to login / signup when you try to vote and aren't logged in
 - [] Add landing page describing the site
 - [] Add google-based authentication
 - [] Add custom SMTP email authentication flow to avoid rate limits
 - [] Add site policies to signup flow
 
-## Future ideas
+## Longer-term ideas
 - [] "Autistic profiles" including specific challenges each individual faces, to allow for more relevant strategies
 - [] Efficiently fetch vote counts for each strategy
 - [] Only fetch a limited number of strategies
 - [] Add challenges to match up to the strategies
+- [] Rich text input for stories

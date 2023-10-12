@@ -52,7 +52,7 @@ export function StoryFormDialog({open, setOpen, strategyId, storyId}:{open: bool
         Add a story
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add A Story</DialogTitle>
+        <DialogTitle>Share your story</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Tell us about your experience, or someone else's experience that resonated with you.
