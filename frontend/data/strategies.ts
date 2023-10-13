@@ -15,7 +15,7 @@ export function useStrategies({onSuccess}:{onSuccess?: any}) {
     const supabase = createClientComponentClient<Database>()
     const {data: strategies, error} = await supabase
       .from('strategies')
-      .select(`*, stories(*)`);
+      .select(`*, stories(*), strategy_tags(*)`);
     return strategies
   }
   return useQuery(strategiesKey, queryFn,{onSuccess})

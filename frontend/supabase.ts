@@ -83,6 +83,58 @@ export interface Database {
           }
         ]
       }
+      strategy_tags: {
+        Row: {
+          created_at: string
+          id: number
+          strategy: number | null
+          tag: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          strategy?: number | null
+          tag?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          strategy?: number | null
+          tag?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategy_tags_strategy_fkey"
+            columns: ["strategy"]
+            referencedRelation: "strategies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "strategy_tags_tag_fkey"
+            columns: ["tag"]
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      tags: {
+        Row: {
+          created_at: string
+          id: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          title?: string
+        }
+        Relationships: []
+      }
       votes: {
         Row: {
           author: string
