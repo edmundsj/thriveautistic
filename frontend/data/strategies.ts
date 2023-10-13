@@ -3,10 +3,11 @@ import type { Database } from '@/supabase'
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {useUser} from "@/data/users";
 
-import {Insert} from "@/data/generic";
+import {Insert, Row} from "@/data/generic";
 
-type Strategy = Insert<'strategies'>
-type StrategyNoAuthor = Omit<Strategy, 'author'>
+type StrategyInsert = Insert<'strategies'>
+type Strategy = Row<'strategies'>
+type StrategyNoAuthor = Omit<StrategyInsert, 'author'>
 
 export const strategiesKey = ['strategies']
 export function useStrategies({onSuccess}:{onSuccess?: any}) {
