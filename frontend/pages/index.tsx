@@ -24,7 +24,7 @@ import SearchBar from "@/components/SearchBar";
 export default function StrategyPage() {
   const {data: strategies} = useStrategies({onSuccess: () => onSearch('')});
   const [modalOpen, setModalOpen] = useState(false);
-  const [filteredStrategies, setFilteredStrategies] = useState([]);
+  const [filteredStrategies, setFilteredStrategies] = useState<any[]>([]);
 
   useEffect(() => {
     if (strategies) {

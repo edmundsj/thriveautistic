@@ -19,7 +19,7 @@ export function StrategyFormDialog({open, setOpen, strategyId}:{open: boolean, s
   }
   const [formData, setFormData] = useState({...emptyFormData});
   const strategyData = {...formData}
-  const {mutate: upsert} = useStrategyMutation({formData: strategyData, strategyId})
+  const {mutate: upsert} = useStrategyMutation({formData: {id: strategyId, ...strategyData}})
   const {data: user} = useUser()
 
   const handleSubmit = (event: any) => {

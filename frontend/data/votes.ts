@@ -3,18 +3,21 @@ import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
 import {useUser} from "@/data/users";
 import {strategiesKey} from "@/data/strategies";
+import {Insert} from "@/data/generic";
 
+type Vote = Insert<'votes'>
+type VoteNoAuthor = Omit<Vote, 'author'>
 
 export function useVotes({strategy}:{strategy: number}) {
-  return useQuery(['votes', strategy], async () => {
-      const supabase = createClientComponentClient<Database>()
-      const {data: votes, error} = await supabase
+  async function queryFn(): Promise<Vote[]> {
+    const supabase = createClientComponentClient<Database>()
+    const {data: votes, error} = await supabase
         .from('votes')
         .select(`*`)
         .eq('strategy', strategy);
-      return votes
-    }
-  )
+    return votes as Vote[]
+  }
+  return useQuery(['votes', strategy], queryFn)
 }
 
 export function useUserVote({strategy}:{strategy: number}) {
@@ -28,7 +31,7 @@ export function useUserVote({strategy}:{strategy: number}) {
       .select(`*`)
       .eq('strategy', strategy)
       .eq('author', authorString);
-    return votes ? votes[0] : null
+    return votes ? (votes[0] as Vote) : null
   }
   )
 }

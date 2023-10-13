@@ -3,8 +3,13 @@ import type { Database } from '@/supabase'
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {useUser} from "@/data/users";
 
+import {Insert} from "@/data/generic";
+
+type Strategy = Insert<'strategies'>
+type StrategyNoAuthor = Omit<Strategy, 'author'>
+
 export const strategiesKey = ['strategies']
-export function useStrategies({onSuccess}:{onSuccess?: Function}) {
+export function useStrategies({onSuccess}:{onSuccess?: any}) {
   async function queryFn() {
     const supabase = createClientComponentClient<Database>()
     const {data: strategies, error} = await supabase
@@ -15,7 +20,7 @@ export function useStrategies({onSuccess}:{onSuccess?: Function}) {
   return useQuery(strategiesKey, queryFn,{onSuccess})
 }
 
-export function useStrategyMutation({formData, strategyId}:{formData: any, strategyId?: number}) {
+export function useStrategyMutation({formData}:{formData: StrategyNoAuthor}) {
   const supabase = createClientComponentClient<Database>()
   const client = useQueryClient()
   const {data: author} = useUser()
@@ -27,22 +32,20 @@ export function useStrategyMutation({formData, strategyId}:{formData: any, strat
       return error;
     }
 
-    if(strategyId) {
-      formData.id = strategyId;
-    }
-    formData.author = author.id
+    const insertData = {author: author.id, ...formData}
 
+    // @ts-ignore
     const { data, error } = await supabase
       .from('strategies')
       .upsert([
-        formData
+          insertData
       ])
       .select()
-    await client.invalidateQueries(['strategy', strategyId]);
+    await client.invalidateQueries(['strategy', formData.id]);
     await client.invalidateQueries(strategiesKey);
     return data;
   }
-  return useMutation(['strategy', strategyId], {mutationFn: mutationFn})
+  return useMutation(['strategy', formData.id], {mutationFn: mutationFn})
 }
 
 export function strategyMutationPolicy({strategy, authorId}:{strategy: any, authorId: string}) {
