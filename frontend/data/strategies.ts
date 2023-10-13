@@ -4,9 +4,11 @@ import {useMutation, useQuery, useQueryClient} from "react-query";
 import {useUser} from "@/data/users";
 
 import {Insert, Row} from "@/data/generic";
+import {Tag} from "postcss-selector-parser";
 
 type StrategyInsert = Insert<'strategies'>
-type Strategy = Row<'strategies'>
+type StrategyTag = Row<'strategy_tags'>
+type Strategy = Row<'strategies'> & {strategy_tags: StrategyTag[]}
 type StrategyNoAuthor = Omit<StrategyInsert, 'author'>
 
 export const strategiesKey = ['strategies']
@@ -51,4 +53,20 @@ export function useStrategyMutation({formData}:{formData: StrategyNoAuthor}) {
 
 export function strategyMutationPolicy({strategy, authorId}:{strategy: any, authorId: string}) {
   return strategy.author == authorId
+}
+
+export function sortStrategyByTagText({strategies, tags}:{strategies: Strategy[], tags: Tag[]}):Record<string, Set<Strategy>> {
+  const tagMap: Record<string, Set<Strategy>> = {};
+
+  strategies.forEach(strategy=> {
+    strategy.strategy_tags.forEach(tag => {
+      const tagId = tag.id
+      if (!tagMap[tagId]) {
+        tagMap[tagId] = new Set();
+      }
+      tagMap[tagId].add(strategy);
+    });
+  });
+
+  return tagMap
 }

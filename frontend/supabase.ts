@@ -87,20 +87,20 @@ export interface Database {
         Row: {
           created_at: string
           id: number
-          strategy: number | null
-          tag: number | null
+          strategy: number
+          tag: number
         }
         Insert: {
           created_at?: string
           id?: number
-          strategy?: number | null
-          tag?: number | null
+          strategy: number
+          tag: number
         }
         Update: {
           created_at?: string
           id?: number
-          strategy?: number | null
-          tag?: number | null
+          strategy?: number
+          tag?: number
         }
         Relationships: [
           {
