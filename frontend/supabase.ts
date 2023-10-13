@@ -15,6 +15,7 @@ export interface Database {
           created_at: string
           id: number
           link: string | null
+          strategy: number | null
           text: string | null
           title: string | null
         }
@@ -23,6 +24,7 @@ export interface Database {
           created_at?: string
           id?: number
           link?: string | null
+          strategy?: number | null
           text?: string | null
           title?: string | null
         }
@@ -31,6 +33,7 @@ export interface Database {
           created_at?: string
           id?: number
           link?: string | null
+          strategy?: number | null
           text?: string | null
           title?: string | null
         }
@@ -40,29 +43,45 @@ export interface Database {
             columns: ["author"]
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stories_strategy_fkey"
+            columns: ["strategy"]
+            referencedRelation: "strategies"
+            referencedColumns: ["id"]
           }
         ]
       }
       strategies: {
         Row: {
+          author: string | null
           created_at: string
           description: string | null
           id: number
           title: string | null
         }
         Insert: {
+          author?: string | null
           created_at?: string
           description?: string | null
           id?: number
           title?: string | null
         }
         Update: {
+          author?: string | null
           created_at?: string
           description?: string | null
           id?: number
           title?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "strategies_author_fkey"
+            columns: ["author"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       votes: {
         Row: {
