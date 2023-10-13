@@ -3,7 +3,7 @@ IMAGE_NAME=nextjs-app
 SUPABASE_PROJECT_ID=xilzmsbfpdtbtomrwqek
 
 api:
-	@docker run $(IMAGE_NAME) npx supabase gen types typescript --project-id $(SUPABASE_PROJECT_ID) > supabase.ts
+	@docker run --env SUPABASE_ACCESS_TOKEN=${SUPABASE_ACCESS_TOKEN} $(IMAGE_NAME) npx supabase gen types typescript --project-id $(SUPABASE_PROJECT_ID) > supabase.ts
 
 # Docker build command
 build:
