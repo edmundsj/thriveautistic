@@ -4,10 +4,11 @@ import {Database} from "@/supabase";
 import {useUser} from "@/data/users";
 
 import {strategiesKey} from "@/data/strategies";
-import {Insert} from "@/data/generic";
+import {Insert, Row} from "@/data/generic";
 
-type Story = Insert<'stories'>
-type StoryNoAuthor = Omit<Story, 'author'>
+export type Story = Row<'stories'>
+type StoryInsert = Insert<'stories'>
+type StoryNoAuthor = Omit<StoryInsert, 'author'>
 
 export function useStoryMutation({formData}:{formData: StoryNoAuthor, storyId?: number}) {
   const supabase = createClientComponentClient<Database>()
@@ -20,7 +21,7 @@ export function useStoryMutation({formData}:{formData: StoryNoAuthor, storyId?: 
       console.error(error);
       return error;
     }
-    const story:Story = {author: author.id, ...formData}
+    const story:StoryInsert = {author: author.id, ...formData}
     // @ts-ignore
     const { data, error } = await supabase
       .from('stories')

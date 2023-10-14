@@ -6,15 +6,12 @@ interface SearchBarProps {
   onSearch: (query: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-
-  useEffect(() => {
-    onSearch(searchTerm)
-  }, [searchTerm])
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    onSearch(event.target.value)
   };
 
   const handleSearchClick = () => {
@@ -36,5 +33,3 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     </Box>
   );
 }
-
-export default SearchBar;

@@ -5,10 +5,14 @@ import {useUser} from "@/data/users";
 
 import {Insert, Row} from "@/data/generic";
 import {Tag} from "postcss-selector-parser";
+import {Story} from "@/data/stories";
 
 type StrategyInsert = Insert<'strategies'>
 type StrategyTag = Row<'strategy_tags'>
-type Strategy = Row<'strategies'> & {strategy_tags: StrategyTag['id'][]}
+export interface Strategy extends Row<'strategies'> {
+  strategy_tags: {id: number}[];
+  stories: Story[];
+}
 type StrategyNoAuthor = Omit<StrategyInsert, 'author'>
 
 export function createStrategy(strategy:Partial<Strategy>): Strategy {
@@ -19,6 +23,7 @@ export function createStrategy(strategy:Partial<Strategy>): Strategy {
     created_at: '',
     description: '',
     strategy_tags: [],
+    stories: [],
     ...strategy,
   }
 }
@@ -30,7 +35,7 @@ export function useStrategies({onSuccess}:{onSuccess?: any}) {
     const {data: strategies, error} = await supabase
       .from('strategies')
       .select(`*, stories(*), strategy_tags(id)`);
-    return strategies
+    return strategies as unknown as Strategy[]
   }
   return useQuery(strategiesKey, queryFn,{onSuccess})
 }
@@ -67,15 +72,15 @@ export function strategyMutationPolicy({strategy, authorId}:{strategy: any, auth
   return strategy.author == authorId
 }
 
-export function sortStrategyByTagText({strategies}:{strategies: Strategy[]}):Record<number, Set<Strategy>> {
+export function sortStrategyByTagId({strategies}:{strategies: Strategy[]}):Record<number, Set<Strategy>> {
   const tagMap: Record<number, Set<Strategy>> = {};
 
   strategies.forEach(strategy=> {
     strategy.strategy_tags.forEach(tag => {
-      if (!tagMap[tag]) {
-        tagMap[tag] = new Set();
+      if (!tagMap[tag.id]) {
+        tagMap[tag.id] = new Set();
       }
-      tagMap[tag].add(strategy);
+      tagMap[tag.id].add(strategy);
     });
   });
 

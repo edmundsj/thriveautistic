@@ -1,102 +1,124 @@
 import * as React from 'react';
-import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
-import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import {useEffect, useState} from 'react';
 import 'app/globals.css'
+import {getItemById, Item, StringItem, unionOfSetsFromKeys} from "@/data/generic";
+import {sortStrategyByTagId, Strategy, useStrategies} from "@/data/strategies";
 
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {useEffect, useState} from "react";
-
-import {CardContent} from "@mui/material";
-import {useStrategies} from "@/data/strategies";
-
-import {StoryFormDialog} from "@/components/StoryFormDialog";
 import {StrategyFormDialog} from "@/components/StrategyFormDialog";
-import {VotesBar} from "@/components/VotesBar";
-import SearchBar from "@/components/SearchBar";
+import {SearchBar} from "@/components/SearchBar";
+import {TagBar} from "@/components/TagBar";
+import SortingSelector from "@/components/SortingSelector";
+import {StrategyCard} from "@/components/StrategyCard";
+import {useTags} from "@/data/tags";
 
-export default function StrategyPage() {
-  const {data: strategies} = useStrategies({onSuccess: () => onSearch('')});
-  const [modalOpen, setModalOpen] = useState(false);
-  const [filteredStrategies, setFilteredStrategies] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (strategies) {
-      setFilteredStrategies(strategies)
+const dummyTagList = [
+  {id: 1, title: 'hello'},
+  {id: 2, title: 'goodbye'},
+  {id: 3, title: 'there'},
+]
+interface SortItem extends StringItem {
+  sortFunction: (a: Strategy, b: Strategy) => number;
+}
+const sortOptions: SortItem[] = [
+  {
+    id: 'newest',
+    title: 'Newest',
+    sortFunction: (a: Strategy, b: Strategy) => {
+      const timeA = new Date(a.created_at).getTime()
+      const timeB = new Date(b.created_at).getTime()
+      return timeB - timeA
     }
-  }, [strategies])
-
-  function onSearch(searchTerm: string) {
-    if (searchTerm) {
-      const newStrategies= (strategies as any[])?.filter(strategy => {
-        return strategy.title.includes(searchTerm)
-      }) || []
-      setFilteredStrategies(newStrategies)
-    } else {
-      setFilteredStrategies(strategies ?? [])
+  },
+  {
+    id: 'popular',
+    title: 'Most Popular',
+    sortFunction: (a: Strategy, b: Strategy) => {
+      // TODO: We may need to rethink our vote data model, and simply package votes with the strategy
+      // rather than fetching them separately.
+      return 0
     }
   }
+]
+export default function StrategyPage() {
+  const {data: strategies} = useStrategies({onSuccess: () => onSearch('')});
+  const {data: fullTagList} = useTags();
 
-  const strategyCards = filteredStrategies?.map(strategy => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedSortOptionId, setSelectedSortOptionId] = useState(sortOptions[0].id);
+  const [filteredStrategies, setFilteredStrategies] = useState<Strategy[]>([]);
+  const [sortedStrategies, setSortedStrategies] = useState<Strategy[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Item[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+
+  // Filter the strategies by whether their tags match and whether they match the current search criteria
+  useEffect(() => {
+    if (!strategies) {
+      setFilteredStrategies([])
+      return;
+    }
+    let newFilteredStrategies: Strategy[] = strategies
+
+    if(selectedTags.length > 0) {
+      const selectedTagIds = selectedTags.map((tag) => tag.id)
+      const bucketedStrategies = sortStrategyByTagId({strategies: strategies})
+      newFilteredStrategies = Array.from(unionOfSetsFromKeys({setObject: bucketedStrategies, keys: selectedTagIds}))
+    }
+
+    if (searchTerm) {
+      newFilteredStrategies = newFilteredStrategies.filter(strategy => {
+        return strategy.title?.includes(searchTerm)
+      })
+    }
+
+    setFilteredStrategies(newFilteredStrategies)
+  }, [strategies, setSortedStrategies, selectedTags, searchTerm]);
+
+  // Sort the strategies by the sort option
+  useEffect(() => {
+    const sortOption = getItemById({items: sortOptions, id:selectedSortOptionId})
+    const sortFunction = sortOption?.sortFunction
+    if(sortFunction) {
+      const newSortedStrategies = filteredStrategies.sort(sortFunction)
+      setSortedStrategies(newSortedStrategies)
+    }
+  }, [sortOptions, selectedSortOptionId, filteredStrategies]);
+
+  function onSortOptionChange(option: string) {
+    setSelectedSortOptionId(option)
+  }
+
+  function onSearch(searchTerm: string) {
+    setSearchTerm(searchTerm)
+  }
+
+  const strategyCards = sortedStrategies?.map(strategy => {
     return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories} key={strategy.id}/>
   })
+  const searchSortSection = <div className={'grid gap-y-5'} >
+    <SearchBar onSearch={onSearch}/>
+    <div className={'flex items-start gap-x-2'}>
+      <SortingSelector
+        options={sortOptions}
+        label={'Sort By'}
+        onSortChange={onSortOptionChange}
+      />
+      <TagBar
+        fullList={fullTagList ?? dummyTagList}
+        selectedItems={selectedTags}
+        setSelectedItems={setSelectedTags}
+        label={'Search by Topic, Tag'}
+        className={'w-full'}
+      />
+    </div>
+  </div>
+
   return (
     <div className={'grid mx-auto p-5 gap-y-5 max-w-2xl'}>
-      <SearchBar onSearch={onSearch}/>
+      {searchSortSection}
       {strategyCards}
       <StrategyFormDialog open={modalOpen} setOpen={setModalOpen}/>
     </div>
   );
 }
 
-
-function StrategyCard({id, title, description, stories}:{id: number, title: string, description: string, stories: any[]}) {
-  return (
-    <Card sx={{minWidth: 275}}>
-      <CardHeader title={title}/>
-      <VotesBar strategyId={id}/>
-      <CardContent>
-        {description}
-      </CardContent>
-      <Stories strategyId={id} stories={stories} />
-    </Card>
-  );
-}
-
-
-function Stories({strategyId, stories}:{strategyId: number, stories: any[]}) {
-  const [modalOpen, setModalOpen] = useState(false)
-  const storyCards = stories?.map((story: any) => {
-    const innerText = <Typography variant={'h5'} className={'mb-1'}>{story.title}</Typography>
-    const title = story.link ? (
-      <a href={story.link} key={story.id}>
-        {innerText}
-      </a>
-    ) : innerText
-    return <div key={story.id}>
-      {title}
-      <Typography>{story.text}</Typography>
-    </div>
-  })
-  return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <Typography>Stories</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        {storyCards}
-      </AccordionDetails>
-      <StoryFormDialog open={modalOpen} setOpen={setModalOpen} strategyId={strategyId}/>
-    </Accordion>
-    )
-}

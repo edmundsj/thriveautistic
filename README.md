@@ -32,11 +32,10 @@ This site uses a next.js frontend and supabase backend.
 
 ## Backlog
 - [] Add "tags" input and display to strategies
-- [] Add search bar to filter by tags
+- [] Implement most / least helpful sort
 - [] Add ability to edit existing stories
 - [] Add ability to edit existing strategies
 - [] Add ability for non-authors to suggest changes to strategies
-- [] Sort strategies from most to least helpful
 - [] Acquire custom domain name, setup DNS
 - [] Navigate to login / signup when you try to vote and aren't logged in
 - [] Add landing page describing the site
@@ -45,6 +44,8 @@ This site uses a next.js frontend and supabase backend.
 - [] Add site policies to signup flow
 
 ## Completed
+- [x] Add search bar to filter by tags
+- [x] Add search bar to filter by newest / most popular
 - [x] Fix bug where strategies don't initially load
 - [x] Add search bar to search by title
 - [x] Wire up voting frontend + backend, including changing your vote
