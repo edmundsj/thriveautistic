@@ -10,6 +10,8 @@ import {TagBar} from "@/components/TagBar";
 import SortingSelector from "@/components/SortingSelector";
 import {StrategyCard} from "@/components/StrategyCard";
 import {useTags} from "@/data/tags";
+import {StoryFormDialog} from "@/components/StoryFormDialog";
+import {Story} from "@/data/stories";
 
 const dummyTagList = [
   {id: 1, title: 'hello'},
@@ -44,6 +46,10 @@ export default function StrategyPage() {
   const {data: fullTagList} = useTags();
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [storyModalOpen, setStoryModalOpen] = useState(false);
+  const [activeStory, setActiveStory] = useState<Story|null>(null)
+  const [activeStrategyId, setActiveStrategyId] = useState(0)
+
   const [selectedSortOptionId, setSelectedSortOptionId] = useState(sortOptions[0].id);
   const [filteredStrategies, setFilteredStrategies] = useState<Strategy[]>([]);
   const [sortedStrategies, setSortedStrategies] = useState<Strategy[]>([]);
@@ -92,8 +98,21 @@ export default function StrategyPage() {
     setSearchTerm(searchTerm)
   }
 
+  function handleNewStoryClick(strategyId: number) {
+    setActiveStory(null);
+    setStoryModalOpen(true);
+  }
+  function handleEditStoryClick(story: Story) {
+    setStoryModalOpen(true)
+    setActiveStory(story)
+  }
+
   const strategyCards = sortedStrategies?.map(strategy => {
-    return <StrategyCard id={strategy.id} title={strategy.title || ''} description={strategy.description || ''} stories={strategy.stories} key={strategy.id}/>
+    return <StrategyCard
+      strategy={strategy}
+      onEditStoryClick={handleEditStoryClick}
+      onNewStoryClick={handleNewStoryClick}
+    />
   })
   const searchSortSection = <div className={'grid gap-y-5'} >
     <SearchBar onSearch={onSearch}/>
@@ -117,7 +136,17 @@ export default function StrategyPage() {
     <div className={'grid mx-auto p-5 gap-y-5 max-w-2xl'}>
       {searchSortSection}
       {strategyCards}
-      <StrategyFormDialog open={modalOpen} setOpen={setModalOpen}/>
+      <StrategyFormDialog
+        open={modalOpen}
+        setOpen={setModalOpen}
+      />
+      <StoryFormDialog
+        open={storyModalOpen}
+        setOpen={setStoryModalOpen}
+        story={activeStory}
+        setStory={setActiveStory}
+        strategyId={activeStrategyId}
+      />
     </div>
   );
 }

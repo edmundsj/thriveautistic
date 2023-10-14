@@ -8,38 +8,68 @@ import * as React from "react";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import {CardContent} from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
 
 import {VotesBar} from "@/components/VotesBar";
 import {StoryFormDialog} from "@/components/StoryFormDialog";
+import {useUser} from "@/data/users";
+import {Story} from "@/data/stories";
+import {Strategy} from "@/data/strategies";
+import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
 
-export function StrategyCard({id, title, description, stories}:{id: number, title: string, description: string, stories: any[]}) {
+interface StrategiesI {
+  onEditStoryClick: (story: Story) => void;
+  onNewStoryClick: (strategyId: number) => void;
+  strategy: Strategy;
+}
+
+export function StrategyCard({strategy, onEditStoryClick, onNewStoryClick}:StrategiesI) {
   return (
     <Card sx={{minWidth: 275}}>
-      <CardHeader title={title}/>
-      <VotesBar strategyId={id}/>
+      <CardHeader title={strategy.title}/>
+      <VotesBar strategyId={strategy.id}/>
       <CardContent>
-        {description}
+        {strategy.description}
       </CardContent>
-      <StrategyStories strategyId={id} stories={stories} />
+      <StrategyStories strategy={strategy} onEditStoryClick={onEditStoryClick} onNewStoryClick={onNewStoryClick} />
     </Card>
   );
 }
 
 
-function StrategyStories({strategyId, stories}:{strategyId: number, stories: any[]}) {
-  const [modalOpen, setModalOpen] = useState(false)
-  const storyCards = stories?.map((story: any) => {
+function StrategyStories({strategy, onEditStoryClick, onNewStoryClick}:StrategiesI) {
+  const {data: user} = useUser();
+
+  const storyCards = strategy.stories?.map((story: Story) => {
     const innerText = <Typography variant={'h5'} className={'mb-1'}>{story.title}</Typography>
+    const editButton = user?.id === story.author ?
+      <div onClick={() => {onEditStoryClick(story)}} className={'cursor-pointer'}>
+        <EditIcon/>
+      </div>
+      :
+      <></>
+
     const title = story.link ? (
-      <a href={story.link} key={story.id}>
-      {innerText}
-      </a>
-  ) : innerText
+      <div>
+        <a href={story.link} key={story.id}>
+          {innerText}
+        </a>
+      </div>
+  ) :
+      <div>
+        {innerText}
+      </div>
+
     return <div key={story.id}>
-      {title}
+      <div className={'flex items-center gap-x-2'}>
+        {title}
+        {editButton}
+      </div>
       <Typography>{story.text}</Typography>
       </div>
   })
+
   return (
     <Accordion>
       <AccordionSummary
@@ -52,7 +82,9 @@ function StrategyStories({strategyId, stories}:{strategyId: number, stories: any
       <AccordionDetails>
         {storyCards}
       </AccordionDetails>
-      <StoryFormDialog open={modalOpen} setOpen={setModalOpen} strategyId={strategyId}/>
+      <Button variant="outlined" onClick={() => onNewStoryClick(strategy.id)} startIcon={<AddIcon/>} disabled={!user}>
+        Add a story
+      </Button>
     </Accordion>
     )
 }

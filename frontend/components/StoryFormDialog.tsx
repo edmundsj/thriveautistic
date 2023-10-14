@@ -1,5 +1,5 @@
-import {useState} from "react";
-import {useStoryMutation} from "@/data/stories";
+import {useEffect, useState} from "react";
+import {Story, useStory, useStoryMutation} from "@/data/stories";
 import {useUser} from "@/data/users";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
@@ -11,7 +11,15 @@ import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import * as React from "react";
 
-export function StoryFormDialog({open, setOpen, strategyId, storyId}:{open: boolean, setOpen: Function, strategyId: number, storyId?: number}) {
+interface StoryForm {
+  open: boolean;
+  strategyId: number;
+  setOpen: (val: boolean) => void;
+  story: Story | null;
+  setStory: (story: Story | null) => void;
+}
+export function StoryFormDialog({open, setOpen, story, setStory, strategyId}: StoryForm) {
+
   const emptyData = {
     title: '',
     text: '',
@@ -24,11 +32,21 @@ export function StoryFormDialog({open, setOpen, strategyId, storyId}:{open: bool
   const {data: user} = useUser()
   const {mutate: upsert} = useStoryMutation({formData: storyData})
 
+  useEffect(() => {
+    if(story) {
+      setFormData({
+        title: story.title ?? '',
+        text: story.text ?? '',
+        link: story.link ?? '',
+      })
+    }
+  }, [story]);
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log(storyData);
-    upsert()
-    setFormData({...emptyData})
+    upsert();
+    setFormData({...emptyData});
+    setStory(null);
     handleClose();
   };
 
@@ -48,9 +66,6 @@ export function StoryFormDialog({open, setOpen, strategyId, storyId}:{open: bool
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddIcon/>} disabled={!user}>
-        Add a story
-      </Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Share your story</DialogTitle>
         <DialogContent>
