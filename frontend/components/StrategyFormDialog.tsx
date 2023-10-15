@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useStoryMutation} from "@/data/stories";
 import {useUser} from "@/data/users";
 import Button from "@mui/material/Button";
@@ -10,23 +10,40 @@ import DialogContentText from "@mui/material/DialogContentText";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import * as React from "react";
-import {useStrategyMutation} from "@/data/strategies";
+import {Strategy, StrategyInsert, useStrategyMutation} from "@/data/strategies";
 
-export function StrategyFormDialog({open, setOpen, strategyId}:{open: boolean, setOpen: Function, strategyId?: number}) {
-  const emptyFormData = {
+interface StrategyForm {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  strategy: Strategy | null;
+  setStrategy: (strategy: Strategy|null) => void;
+}
+export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:StrategyForm) {
+  const emptyFormData: StrategyInsert = {
     title: '',
     description: '',
   }
   const [formData, setFormData] = useState({...emptyFormData});
   const strategyData = {...formData}
-  const {mutate: upsert} = useStrategyMutation({formData: {id: strategyId, ...strategyData}})
+  const {mutate: upsert} = useStrategyMutation({formData: {...strategyData}})
   const {data: user} = useUser()
+
+  useEffect(() => {
+    if(strategy) {
+      setFormData({
+        id: strategy.id ?? undefined,
+        title: strategy.title ?? '',
+        description: strategy.description ?? '',
+      })
+    }
+
+  }, [strategy]);
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log(strategyData);
-    upsert()
-    setFormData({...emptyFormData})
+    upsert();
+    setFormData({...emptyFormData});
+    setStrategy(null);
     handleClose();
   };
 

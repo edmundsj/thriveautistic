@@ -21,13 +21,25 @@ import AddIcon from "@mui/icons-material/Add";
 interface StrategiesI {
   onEditStoryClick: (story: Story) => void;
   onNewStoryClick: (strategyId: number) => void;
+  onEditStrategyClick: (strategy: Strategy) => void;
   strategy: Strategy;
 }
 
-export function StrategyCard({strategy, onEditStoryClick, onNewStoryClick}:StrategiesI) {
+export function StrategyCard({strategy, onEditStoryClick, onNewStoryClick, onEditStrategyClick}:StrategiesI) {
+  const {data: user} = useUser();
+  const editButton = user?.id === strategy.author ?
+    <div onClick={() => {onEditStrategyClick(strategy)}} className={'cursor-pointer'}>
+      <EditIcon/>
+    </div>
+    : <></>
+  const header = <div className={'flex items-center gap-x-3'}>
+    {strategy.title}
+    {editButton}
+    </div>
+
   return (
     <Card sx={{minWidth: 275}}>
-      <CardHeader title={strategy.title}/>
+      <CardHeader title={header}/>
       <VotesBar strategyId={strategy.id}/>
       <CardContent>
         {strategy.description}
@@ -38,7 +50,9 @@ export function StrategyCard({strategy, onEditStoryClick, onNewStoryClick}:Strat
 }
 
 
-function StrategyStories({strategy, onEditStoryClick, onNewStoryClick}:StrategiesI) {
+type StrategyStoriesI = Omit<StrategiesI, 'onEditStrategyClick'>
+
+function StrategyStories({strategy, onEditStoryClick, onNewStoryClick}:StrategyStoriesI) {
   const {data: user} = useUser();
 
   const storyCards = strategy.stories?.map((story: Story) => {

@@ -7,7 +7,7 @@ import {Insert, Row} from "@/data/generic";
 import {Tag} from "postcss-selector-parser";
 import {Story} from "@/data/stories";
 
-type StrategyInsert = Insert<'strategies'>
+export type StrategyInsert = Insert<'strategies'>
 type StrategyTag = Row<'strategy_tags'>
 export interface Strategy extends Row<'strategies'> {
   strategy_tags: {id: number}[];

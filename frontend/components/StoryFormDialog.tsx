@@ -20,15 +20,18 @@ interface StoryForm {
 }
 export function StoryFormDialog({open, setOpen, story, setStory, strategyId}: StoryForm) {
 
-  const emptyData = {
-    id: undefined,
+  const emptyData:Story = {
+    id: 0,
+    author: '',
+    created_at: '',
+    strategy: strategyId,
     title: '',
     text: '',
     link: '',
   }
   const [formData, setFormData] = useState<StoryNoAuthor>({...emptyData});
 
-  const storyData = {...formData, strategy: strategyId}
+  const storyData = {...formData}
 
   const {data: user} = useUser()
   const {mutate: upsert} = useStoryMutation({formData: storyData})
@@ -37,6 +40,7 @@ export function StoryFormDialog({open, setOpen, story, setStory, strategyId}: St
     if(story) {
       setFormData({
         id: story.id ?? undefined,
+        strategy: story.strategy ?? strategyId,
         title: story.title ?? '',
         text: story.text ?? '',
         link: story.link ?? '',

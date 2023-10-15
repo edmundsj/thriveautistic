@@ -46,6 +46,7 @@ export default function StrategyPage() {
   const {data: fullTagList} = useTags();
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeStrategy, setActiveStrategy] = useState<Strategy | null>(null)
   const [storyModalOpen, setStoryModalOpen] = useState(false);
   const [activeStory, setActiveStory] = useState<Story|null>(null)
   const [activeStrategyId, setActiveStrategyId] = useState(0)
@@ -107,10 +108,15 @@ export default function StrategyPage() {
     setStoryModalOpen(true)
     setActiveStory(story)
   }
+  function handleEditStrategyClick(strategy: Strategy) {
+    setActiveStrategy(strategy);
+    setModalOpen(true);
+  }
 
   const strategyCards = sortedStrategies?.map(strategy => {
     return <StrategyCard
       strategy={strategy}
+      onEditStrategyClick={handleEditStrategyClick}
       onEditStoryClick={handleEditStoryClick}
       onNewStoryClick={handleNewStoryClick}
     />
@@ -138,6 +144,8 @@ export default function StrategyPage() {
       {searchSortSection}
       {strategyCards}
       <StrategyFormDialog
+        strategy={activeStrategy}
+        setStrategy={setActiveStrategy}
         open={modalOpen}
         setOpen={setModalOpen}
       />
