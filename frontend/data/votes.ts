@@ -2,7 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "react-query";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
 import {useUser} from "@/data/users";
-import {strategiesKey} from "@/data/strategies";
+import {strategyKey} from "@/data/strategies";
 import {Insert} from "@/data/generic";
 
 type Vote = Insert<'votes'>
@@ -62,7 +62,7 @@ export function useVoteMutation({voteId, strategy}:{voteId?: number, strategy: n
     await client.invalidateQueries(['votes', formData.strategy]);
     await client.invalidateQueries(['vote', formData.strategy, formData.author]);
     await client.invalidateQueries(['strategy', formData.strategy]);
-    await client.invalidateQueries(strategiesKey);
+    await client.invalidateQueries(strategyKey({}));
     return data;
   }
   return useMutation(['vote', strategy], {mutationFn: mutationFn})

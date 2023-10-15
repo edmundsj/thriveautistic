@@ -3,30 +3,30 @@ import {Autocomplete, Chip, TextField} from "@mui/material";
 import {Item} from "@/data/generic";
 import {Tag} from "@/data/tags";
 
-interface SearchBarProps extends HTMLProps<HTMLDivElement> {
-  fullList: Item[];
+interface SearchBarProps<T extends Item> extends HTMLProps<HTMLDivElement> {
+  fullList: T[];
   label: string;
-  selectedItems: Item[];
-  setSelectedItems: (items: Item[]) => void;
+  selectedItems: T[];
+  setSelectedItems: (items: T[]) => void;
 }
 
-export const TagBar: React.FC<SearchBarProps> = ({ fullList, label, selectedItems, setSelectedItems, ...props}) => {
-  const [remainingList, setRemainingList] = useState<Item[]>(fullList)
+export const TagBar = <T extends Item,>({ fullList, label, selectedItems, setSelectedItems, ...props}:SearchBarProps<T>) => {
+  const [remainingList, setRemainingList] = useState<T[]>(fullList)
   const [inputValue, setInputValue] = useState<string>('');
 
   const filteredItems = findRemainingList(selectedItems).filter((item) =>
     item.title.toLowerCase().includes(inputValue.toLowerCase())
   ).slice(0, 5);
 
-  function findRemainingList(newItems: Item[]):Item[] {
+  function findRemainingList(newItems: T[]):T[] {
     return fullList.filter((item) => {
       return !newItems.includes(item);
     })
   }
 
-  const handleSelect = (item: Item) => {
+  const handleSelect = (item: T) => {
     const newSelectedItems = [...selectedItems, item]
-    const newRemainingList = findRemainingList(newSelectedItems)
+    const newRemainingList:T[] = findRemainingList(newSelectedItems)
     setRemainingList(newRemainingList);
     setSelectedItems(newSelectedItems);
   };
@@ -54,16 +54,22 @@ export const TagBar: React.FC<SearchBarProps> = ({ fullList, label, selectedItem
           )}
           onChange={(_, value) => value && handleSelect(value)}
         />
-        <div>
-          {selectedItems.map((item) => (
-            <Chip
-              key={item.id}
-              label={item.title}
-              onDelete={() => handleRemove(item)}
-            />
-          ))}
-        </div>
+        <TagList tags={selectedItems} onClick={handleRemove}/>
       </div>
     </div>
   );
 };
+
+export const TagList = ({tags, onClick}:{tags: Item[], onClick: (item: Item) => void}) => {
+  return (
+    <div>
+      {tags.map((tag) => (
+        <Chip
+          key={tag.id}
+          label={tag.title}
+          onDelete={() => onClick(tag)}
+        />
+      ))}
+    </div>
+  )
+}

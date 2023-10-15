@@ -10,7 +10,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import * as React from "react";
-import {Strategy, StrategyInsert, useStrategyMutation} from "@/data/strategies";
+import {Strategy, StrategyInsert, useStrategies, useStrategyMutation, useStrategyTagsMutation} from "@/data/strategies";
+import {Tag, useTags} from "@/data/tags";
+import {TagBar} from "@/components/TagBar";
 
 interface StrategyForm {
   open: boolean;
@@ -24,9 +26,13 @@ export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:Strate
     description: '',
   }
   const [formData, setFormData] = useState({...emptyFormData});
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [strategyId, setStrategyId] = useState(0)
   const strategyData = {...formData}
-  const {mutate: upsert} = useStrategyMutation({formData: {...strategyData}})
+  const {mutateAsync: upsert} = useStrategyMutation({formData: {...strategyData}})
+  const {mutateAsync: upsertStrategyTags} = useStrategyTagsMutation({tags: selectedTags})
   const {data: user} = useUser()
+  const {data: tags} = useTags();
 
   useEffect(() => {
     if(strategy) {
@@ -35,16 +41,29 @@ export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:Strate
         title: strategy.title ?? '',
         description: strategy.description ?? '',
       })
+      setStrategyId(strategy.id)
     }
 
   }, [strategy]);
 
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    upsert();
+  function resetState() {
     setFormData({...emptyFormData});
     setStrategy(null);
-    handleClose();
+    setSelectedTags([]);
+    setStrategyId(0)
+  }
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    upsert().then((data: any) => {
+      if(data && !('error' in data) && data.length > 0) {
+        console.log(data)
+        upsertStrategyTags({strategyId: data[0].id}).then(() => {
+          resetState();
+          handleClose();
+        })
+      }
+    });
   };
 
   const handleChange = (event: any) => {
@@ -96,6 +115,7 @@ export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:Strate
             value={formData.description}
             onChange={handleChange}
           />
+          <TagBar fullList={tags ?? []} label={'Add tags or categories'} selectedItems={selectedTags} setSelectedItems={setSelectedTags}/>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

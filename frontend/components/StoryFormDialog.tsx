@@ -10,6 +10,8 @@ import DialogContentText from "@mui/material/DialogContentText";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import * as React from "react";
+import {TagBar} from "@/components/TagBar";
+import {Tag, useTags} from "@/data/tags";
 
 interface StoryForm {
   open: boolean;
@@ -33,7 +35,6 @@ export function StoryFormDialog({open, setOpen, story, setStory, strategyId}: St
 
   const storyData = {...formData}
 
-  const {data: user} = useUser()
   const {mutate: upsert} = useStoryMutation({formData: storyData})
 
   useEffect(() => {

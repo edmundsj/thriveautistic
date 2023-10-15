@@ -3,7 +3,7 @@ import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
 import {useUser} from "@/data/users";
 
-import {strategiesKey} from "@/data/strategies";
+import {strategyKey} from "@/data/strategies";
 import {Insert, Row} from "@/data/generic";
 
 export type Story = Row<'stories'>
@@ -48,7 +48,7 @@ export function useStoryMutation({formData}:{formData: StoryNoAuthor, storyId?: 
       )
       .select()
     await client.invalidateQueries(['stories', formData.strategy]);
-    await client.invalidateQueries(strategiesKey);
+    await client.invalidateQueries(strategyKey({}));
     return data;
   }
   return useMutation(['story', formData.id], {mutationFn: mutationFn})

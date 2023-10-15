@@ -31,8 +31,8 @@ The frontend is deployed with [Vercel](https://vercel.com/edmundsj/thriveautisti
 This site uses a next.js frontend and supabase backend.
 
 ## Backlog
-- [] Add ability to edit existing strategies
-- [] Add "tags" input and display to strategies
+- [] Add ability for users to remove tags from existing strategies
+- [] Add ability for users to create entirely new tags when creating a strategy
 - [] Implement most / least helpful sort
 - [] Add ability for non-authors to suggest changes to strategies
 - [] Acquire custom domain name, setup DNS
@@ -43,6 +43,10 @@ This site uses a next.js frontend and supabase backend.
 - [] Add site policies to signup flow
 
 ## Completed
+- [x] Add "tags" input and display to strategies
+- [x] Add ability to add tags to new strategies
+- [x] Add ability to add tags to existing strategies
+- [x] Add ability to edit existing strategies
 - [x] Add ability to edit existing stories
 - [x] Add search bar to filter by tags
 - [x] Add search bar to filter by newest / most popular

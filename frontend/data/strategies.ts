@@ -4,13 +4,13 @@ import {useMutation, useQuery, useQueryClient} from "react-query";
 import {useUser} from "@/data/users";
 
 import {Insert, Row} from "@/data/generic";
-import {Tag} from "postcss-selector-parser";
-import {Story} from "@/data/stories";
+import {Tag} from "@/data/tags";
+import {Story, StoryInsert, StoryNoAuthor} from "@/data/stories";
 
 export type StrategyInsert = Insert<'strategies'>
 type StrategyTag = Row<'strategy_tags'>
 export interface Strategy extends Row<'strategies'> {
-  strategy_tags: {id: number}[];
+  strategy_tags: {tag: number}[];
   stories: Story[];
 }
 type StrategyNoAuthor = Omit<StrategyInsert, 'author'>
@@ -28,16 +28,22 @@ export function createStrategy(strategy:Partial<Strategy>): Strategy {
   }
 }
 
-export const strategiesKey = ['strategies']
+export function strategyKey({strategyId}:{strategyId?: number}) {
+  if(strategyId) {
+    return ['strategy', strategyId]
+  } else {
+    return ['strategies']
+  }
+}
 export function useStrategies({onSuccess}:{onSuccess?: any}) {
   async function queryFn() {
     const supabase = createClientComponentClient<Database>()
     const {data: strategies, error} = await supabase
       .from('strategies')
-      .select(`*, stories(*), strategy_tags(id)`);
+      .select(`*, stories(*), strategy_tags(tag)`);
     return strategies as unknown as Strategy[]
   }
-  return useQuery(strategiesKey, queryFn,{onSuccess})
+  return useQuery(strategyKey({}), queryFn,{onSuccess})
 }
 
 export function useStrategyMutation({formData}:{formData: StrategyNoAuthor}) {
@@ -62,10 +68,35 @@ export function useStrategyMutation({formData}:{formData: StrategyNoAuthor}) {
       ])
       .select()
     await client.invalidateQueries(['strategy', formData.id]);
-    await client.invalidateQueries(strategiesKey);
+    await client.invalidateQueries(strategyKey({}));
     return data;
   }
-  return useMutation(['strategy', formData.id], {mutationFn: mutationFn})
+  return useMutation(['strategy', formData.id], {mutationFn})
+}
+
+export function useStrategyTagsMutation({tags}:{tags: Tag[]}) {
+  const supabase = createClientComponentClient<Database>()
+  const client = useQueryClient()
+
+  const mutationFn = async ({strategyId}:{strategyId: number}) => {
+    const tagData = tags.map((tag) => {
+      return {
+        tag: tag.id,
+        strategy: strategyId,
+      }
+    })
+    // @ts-ignore
+    const { data, error } = await supabase
+      .from('strategy_tags')
+      .upsert(
+        tagData
+      )
+      .select()
+    await client.invalidateQueries(strategyKey({strategyId}));
+    await client.invalidateQueries(strategyKey({}));
+    return data;
+  }
+  return useMutation(['strategy_tags', tags], {mutationFn: mutationFn})
 }
 
 export function strategyMutationPolicy({strategy, authorId}:{strategy: any, authorId: string}) {
@@ -77,10 +108,10 @@ export function sortStrategyByTagId({strategies}:{strategies: Strategy[]}):Recor
 
   strategies.forEach(strategy=> {
     strategy.strategy_tags.forEach(tag => {
-      if (!tagMap[tag.id]) {
-        tagMap[tag.id] = new Set();
+      if (!tagMap[tag.tag]) {
+        tagMap[tag.tag] = new Set();
       }
-      tagMap[tag.id].add(strategy);
+      tagMap[tag.tag].add(strategy);
     });
   });
 

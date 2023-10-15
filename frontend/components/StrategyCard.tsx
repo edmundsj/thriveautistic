@@ -11,12 +11,13 @@ import {CardContent} from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 
 import {VotesBar} from "@/components/VotesBar";
-import {StoryFormDialog} from "@/components/StoryFormDialog";
 import {useUser} from "@/data/users";
 import {Story} from "@/data/stories";
 import {Strategy} from "@/data/strategies";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
+import {TagList} from "@/components/TagBar";
+import {useTags} from "@/data/tags";
 
 interface StrategiesI {
   onEditStoryClick: (story: Story) => void;
@@ -27,6 +28,7 @@ interface StrategiesI {
 
 export function StrategyCard({strategy, onEditStoryClick, onNewStoryClick, onEditStrategyClick}:StrategiesI) {
   const {data: user} = useUser();
+  const {data: tags} = useTags();
   const editButton = user?.id === strategy.author ?
     <div onClick={() => {onEditStrategyClick(strategy)}} className={'cursor-pointer'}>
       <EditIcon/>
@@ -37,6 +39,11 @@ export function StrategyCard({strategy, onEditStoryClick, onNewStoryClick, onEdi
     {editButton}
     </div>
 
+  const strategyTagIds = strategy.strategy_tags.map(tag => tag.tag)
+  const availableTags = tags?.filter((tag) => {
+    return strategyTagIds.includes(tag.id)
+  }) ?? []
+
   return (
     <Card sx={{minWidth: 275}}>
       <CardHeader title={header}/>
@@ -44,6 +51,9 @@ export function StrategyCard({strategy, onEditStoryClick, onNewStoryClick, onEdi
       <CardContent>
         {strategy.description}
       </CardContent>
+      <div className={'mx-2 mb-2'}>
+        <TagList tags={availableTags} onClick={() => {}}/>
+      </div>
       <StrategyStories strategy={strategy} onEditStoryClick={onEditStoryClick} onNewStoryClick={onNewStoryClick} />
     </Card>
   );
