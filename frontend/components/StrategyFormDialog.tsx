@@ -27,6 +27,7 @@ export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:Strate
   }
   const [formData, setFormData] = useState({...emptyFormData});
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [newTags, setNewTags] = useState<Tag[]>([])
   const [strategyId, setStrategyId] = useState(0)
   const strategyData = {...formData}
   const {mutateAsync: upsert} = useStrategyMutation({formData: {...strategyData}})
@@ -120,7 +121,14 @@ export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:Strate
             value={formData.description}
             onChange={handleChange}
           />
-          <TagBar fullList={allTags ?? []} label={'Add tags or categories'} selectedItems={selectedTags} setSelectedItems={setSelectedTags}/>
+          <TagBar
+            fullList={allTags ?? []}
+            label={'Add tags or categories'}
+            selectedItems={selectedTags}
+            setSelectedItems={setSelectedTags}
+            newTags={newTags}
+            setNewTags={setNewTags}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
