@@ -1,5 +1,5 @@
 # ThriveAutistic
-Live at [ThriveAutistic](https://thriveautistic.vercel.app/strategies)
+Live at [ThriveAutistic](https://www.thriveautistic.org)
 
 I wish the autistic community had a way to coalesce around solutions, accommodations, and ways of existing that work best for us, and a way to share those with each other and back them up with resources and data. This is an attempt to fulfill this wish.
 
@@ -31,18 +31,18 @@ The frontend is deployed with [Vercel](https://vercel.com/edmundsj/thriveautisti
 This site uses a next.js frontend and supabase backend.
 
 ## Backlog
+- [x] Add custom SMTP email authentication flow to avoid rate limits (SETUP, NEEDS TESTING)
 - [] Add ability for users to remove tags from existing strategies
 - [] Add ability for users to create entirely new tags when creating a strategy
 - [] Implement most / least helpful sort
-- [] Add ability for non-authors to suggest changes to strategies
-- [] Acquire custom domain name, setup DNS
 - [] Navigate to login / signup when you try to vote and aren't logged in
 - [] Add landing page describing the site
 - [] Add google-based authentication
-- [] Add custom SMTP email authentication flow to avoid rate limits
-- [] Add site policies to signup flow
+- [] Add site policies to signup flow, make users check box and review
+- [] Add ability for non-authors to suggest changes to strategies
 
 ## Completed
+- [x] Acquire custom domain name, setup DNS
 - [x] Add "tags" input and display to strategies
 - [x] Add ability to add tags to new strategies
 - [x] Add ability to add tags to existing strategies
