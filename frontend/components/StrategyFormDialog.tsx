@@ -13,6 +13,7 @@ import * as React from "react";
 import {Strategy, StrategyInsert, useStrategies, useStrategyMutation, useStrategyTagsMutation} from "@/data/strategies";
 import {Tag, useTags} from "@/data/tags";
 import {TagBar} from "@/components/TagBar";
+import {Alert} from "@mui/material";
 
 interface StrategyForm {
   open: boolean;
@@ -30,8 +31,8 @@ export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:Strate
   const [newTags, setNewTags] = useState<Tag[]>([])
   const [strategyId, setStrategyId] = useState(0)
   const strategyData = {...formData}
-  const {mutateAsync: upsert} = useStrategyMutation({formData: {...strategyData}})
-  const {mutateAsync: upsertStrategyTags} = useStrategyTagsMutation({tags: selectedTags})
+  const {mutateAsync: upsert, error: strategyError} = useStrategyMutation({formData: {...strategyData}})
+  const {mutateAsync: upsertStrategyTags, error: strategyTagsError} = useStrategyTagsMutation({tags: selectedTags})
   const {data: user} = useUser()
   const {data: allTags} = useTags();
 
@@ -63,7 +64,6 @@ export function StrategyFormDialog({open, setOpen, strategy, setStrategy}:Strate
     event.preventDefault();
     upsert().then((data: any) => {
       if(data && !('error' in data) && data.length > 0) {
-        console.log(data)
         upsertStrategyTags({strategyId: data[0].id}).then(() => {
           resetState();
           handleClose();

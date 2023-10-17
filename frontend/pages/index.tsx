@@ -115,6 +115,7 @@ export default function StrategyPage() {
 
   const strategyCards = sortedStrategies?.map(strategy => {
     return <StrategyCard
+      key={strategy.id}
       strategy={strategy}
       onEditStrategyClick={handleEditStrategyClick}
       onEditStoryClick={handleEditStoryClick}

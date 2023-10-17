@@ -1,4 +1,4 @@
-import {useMutation, useQuery, useQueryClient} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
 import {useUser} from "@/data/users";
@@ -17,14 +17,14 @@ export function useVotes({strategy}:{strategy: number}) {
         .eq('strategy', strategy);
     return votes as Vote[]
   }
-  return useQuery(['votes', strategy], queryFn)
+  return useQuery({queryKey: ['votes', strategy], queryFn})
 }
 
 export function useUserVote({strategy}:{strategy: number}) {
   const {data: author} = useUser()
   const authorString = author?.id ?? ''
 
-  return useQuery(['vote', strategy, author?.id], async () => {
+  const queryFn = async () => {
     const supabase = createClientComponentClient<Database>()
     const {data: votes, error} = await supabase
       .from('votes')
@@ -33,7 +33,8 @@ export function useUserVote({strategy}:{strategy: number}) {
       .eq('author', authorString);
     return votes ? (votes[0] as Vote) : null
   }
-  )
+
+  return useQuery({queryKey: ['vote', strategy, author?.id], queryFn})
 }
 
 export function useVoteMutation({voteId, strategy}:{voteId?: number, strategy: number}) {
@@ -59,13 +60,13 @@ export function useVoteMutation({voteId, strategy}:{voteId?: number, strategy: n
         formData
       ])
       .select()
-    await client.invalidateQueries(['votes', formData.strategy]);
-    await client.invalidateQueries(['vote', formData.strategy, formData.author]);
-    await client.invalidateQueries(['strategy', formData.strategy]);
-    await client.invalidateQueries(strategyKey({}));
+    await client.invalidateQueries({queryKey: ['votes', formData.strategy]});
+    await client.invalidateQueries({queryKey: ['vote', formData.strategy, formData.author]});
+    await client.invalidateQueries({queryKey: ['strategy', formData.strategy]});
+    await client.invalidateQueries({queryKey: strategyKey({})});
     return data;
   }
-  return useMutation(['vote', strategy], {mutationFn: mutationFn})
+  return useMutation({mutationFn})
 }
 
 export function voteMutationPolicy({vote, authorId}:{vote: any, authorId: string}) {

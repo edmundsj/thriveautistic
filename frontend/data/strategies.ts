@@ -1,9 +1,9 @@
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import type { Database } from '@/supabase'
-import {useMutation, useQuery, useQueryClient} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useUser} from "@/data/users";
 
-import {Insert, Row} from "@/data/generic";
+import {Insert, Row, TError} from "@/data/generic";
 import {Tag} from "@/data/tags";
 import {Story, StoryInsert, StoryNoAuthor} from "@/data/stories";
 
@@ -35,7 +35,7 @@ export function strategyKey({strategyId}:{strategyId?: number}) {
     return ['strategies']
   }
 }
-export function useStrategies({onSuccess}:{onSuccess?: any}) {
+export function useStrategies({}) {
   async function queryFn() {
     const supabase = createClientComponentClient<Database>()
     const {data: strategies, error} = await supabase
@@ -43,7 +43,7 @@ export function useStrategies({onSuccess}:{onSuccess?: any}) {
       .select(`*, stories(*), strategy_tags(tag)`);
     return strategies as unknown as Strategy[]
   }
-  return useQuery(strategyKey({}), queryFn,{onSuccess})
+  return useQuery({queryKey: strategyKey({}), queryFn})
 }
 
 export function useStrategyMutation({formData}:{formData: StrategyNoAuthor}) {
@@ -67,11 +67,14 @@ export function useStrategyMutation({formData}:{formData: StrategyNoAuthor}) {
           insertData
       ])
       .select()
-    await client.invalidateQueries(['strategy', formData.id]);
-    await client.invalidateQueries(strategyKey({}));
+    await client.invalidateQueries({queryKey: strategyKey({strategyId: formData.id})});
+    await client.invalidateQueries({queryKey: strategyKey({})});
+    if (error) {
+      throw new Error(error.message);
+    }
     return data;
   }
-  return useMutation(['strategy', formData.id], {mutationFn})
+  return useMutation({mutationFn})
 }
 
 export function useStrategyTagsMutation({tags}:{tags: Tag[]}) {
@@ -92,11 +95,11 @@ export function useStrategyTagsMutation({tags}:{tags: Tag[]}) {
         tagData
       )
       .select()
-    await client.invalidateQueries(strategyKey({strategyId}));
-    await client.invalidateQueries(strategyKey({}));
+    await client.invalidateQueries({queryKey: strategyKey({strategyId})});
+    await client.invalidateQueries({queryKey: strategyKey({})});
     return data;
   }
-  return useMutation(['strategy_tags', tags], {mutationFn: mutationFn})
+  return useMutation({mutationFn})
 }
 
 export function strategyMutationPolicy({strategy, authorId}:{strategy: any, authorId: string}) {

@@ -31,6 +31,8 @@ The frontend is deployed with [Vercel](https://vercel.com/edmundsj/thriveautisti
 This site uses a next.js frontend and supabase backend.
 
 ## Backlog
+- [] Add error message reporting
+- [] Add loading wrapper component to prevent multiple submission
 - [x] Add custom SMTP email authentication flow to avoid rate limits (SETUP, NEEDS TESTING)
 - [] Add ability for users to remove tags from existing strategies
 - [] Add ability for users to create entirely new tags when creating a strategy

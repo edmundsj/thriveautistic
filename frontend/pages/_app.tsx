@@ -3,8 +3,8 @@ import {Layout} from "@/components/Layout";
 import {
   QueryClient,
   QueryClientProvider,
-} from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
+} from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import "../app/globals.css";
 
 

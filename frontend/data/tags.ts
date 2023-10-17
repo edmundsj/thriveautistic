@@ -1,7 +1,7 @@
 import {Insert, Row} from "@/data/generic";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
-import {useQuery} from "react-query";
+import {useQuery} from "@tanstack/react-query";
 
 export type Tag = Row<'tags'>
 type TagInsert = Insert<'tags'>
@@ -21,5 +21,5 @@ export function useTags() {
       .select(`*`);
     return tags as unknown as Tag[]
   }
-  return useQuery('tags', queryFn,{})
+  return useQuery({queryKey: ['tags'], queryFn})
 }

@@ -43,3 +43,5 @@ export function unionOfSetsFromKeys<T> (
 
   return resultSet;
 }
+
+export interface TError extends Error {};

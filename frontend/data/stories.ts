@@ -1,4 +1,4 @@
-import {useMutation, useQuery, useQueryClient} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {Database} from "@/supabase";
 import {useUser} from "@/data/users";
@@ -16,7 +16,7 @@ export function storyKey({story}:{story?: number}) {
   return ['stories']
 }
 
-export function useStory({story, onSuccess}:{story: number, onSuccess: () => void}) {
+export function useStory({story}:{story: number}) {
 
   async function queryFn() {
     const supabase = createClientComponentClient<Database>()
@@ -26,7 +26,7 @@ export function useStory({story, onSuccess}:{story: number, onSuccess: () => voi
       .eq('id', story)
     return stories ? (stories[0]) : null
   }
-  return useQuery(storyKey({story}), queryFn, {enabled: !!story, onSuccess})
+  return useQuery({queryKey: storyKey({story}), queryFn, enabled: !!story})
 }
 export function useStoryMutation({formData}:{formData: StoryNoAuthor, storyId?: number}) {
   const supabase = createClientComponentClient<Database>()
@@ -47,11 +47,11 @@ export function useStoryMutation({formData}:{formData: StoryNoAuthor, storyId?: 
           [story]
       )
       .select()
-    await client.invalidateQueries(['stories', formData.strategy]);
-    await client.invalidateQueries(strategyKey({}));
+    await client.invalidateQueries({queryKey: ['stories', formData.strategy]});
+    await client.invalidateQueries({queryKey: strategyKey({})});
     return data;
   }
-  return useMutation(['story', formData.id], {mutationFn: mutationFn})
+  return useMutation({mutationFn})
 }
 
 export function storyMutationPolicy({story, authorId}:{story: any, authorId: string}) {
